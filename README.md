@@ -1,5 +1,7 @@
 # SolutionPlan_Template
 
+<img src="assets/coota_logo.png" alt="Coota Logo" width="500px" />
+
 # 1. Your Team at a Glance
 
 ## COOTA / Updating mobility, orchestrating trust.
