@@ -66,7 +66,7 @@ Given the short timeframe, we focused on starting small and writing clean and it
 
 
 ## Communication
-Communication happened both in person during the hackathon and through a shared Slack group channel, ensuring quick exchanges and transparency across the team.
+Communication is happening both in person during the hackathon and through a shared Slack group channel, ensuring quick exchanges and transparency across the team.
 
 ## Decision Making
-All important decisions were made through unanimous agreement. This ensured that every team member was aligned with the direction and felt ownership of the solution.
+All important decisions are being made through unanimous agreement. This ensures that every team member is aligned with the direction and feel ownership of the solution.
