@@ -19,12 +19,28 @@ Canary Orchestrator for Over The Air
 | Lui Varela       |  man-lvarela | back-end     |
 
 ## Challenge
-*Which challenge have you decided to compete for?*
+Update Possible Challenge: OTA updates for ECUs
 
 ## Core Idea
-*What is your rough solution idea?*
+Implement a CI/CD-driven OTA release process with real-time monitoring and automated decision logic.
+Deploy updates via canary rollout (e.g., 0.5% of devices), expand rollout progressively if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
+This ensures safe, scalable, and adaptive OTA deployments.
 
-*Sketch something that helps understand e.g. mermaid chart*
+```mermaid
+flowchart TD
+    A[Start OTA Release] --> B[Canary Rollout e.g. 0.5% of devices]
+    B --> C[Real-time Monitoring & Telemetry]
+    C --> D{Errors within threshold?}
+    
+    D -- Yes --> E[Progressively Expand Rollout]
+    E --> C
+    
+    D -- No --> F[Automatic Rollback]
+    F --> G[Restore Previous Stable Version]
+    
+    E --> H[Full Deployment All Vehicles]
+    H --> I[Safe, Scalable & Adaptive OTA Deployment]
+```
 
 ---
 
