@@ -16,7 +16,7 @@ Canary Orchestrator for Over The Air
 | João Barradas    |  jbarradas | front-end    |
 | Gustavo Calonico |  randomcash  | back-end     |
 | Nuno Valente     |  nuvan | back-end     |
-| Lui Varela       |  man-lvarela | back-end     |
+| Luis Varela      |  man-lvarela | back-end     |
 
 ## Challenge
 Update Possible Challenge: OTA updates for ECUs
