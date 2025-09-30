@@ -47,16 +47,26 @@ flowchart TD
 # 2. How Do You Work
 
 ## Development Process
-*Brief overview of your development process.*
+Development Process - Iterative approach
+1.  Deploy & rollback – The first milestone was making deployment and rollback mechanisms functional.
+2.  Error monitoring – Functional code was connected to COOTA module to read errors and validate the next course of action.
+3.  Scalable rollout – Once stability was achieved, we focused on enabling deployment at scale.
+4. Team division – To move faster, we split into three focus areas:
+
+•	Pitch & presentation
+•	Back-end
+•	Front-end
+
 
 ### Planning & Tracking
-*How do you plan and track progress?*
+We started with a brainstorming session to define the core idea and outline our priorities. From there, progress was tracked through constant update checks and quick syncs to adapt to new challenges and keep everyone aligned.
 
 ### Quality Assurance
-*How do you ensure quality (e.g., testing, documentation, code reviews)?*
+Given the short timeframe, we focused on start small writing clean and iteratively scale, to ensure clarity. This approach made collaboration smoother and reduced integration issues.
+
 
 ## Communication
-*How does your team communicate?*
+Communication happened both in person during the hackathon and through a shared Slack group channel, ensuring quick exchanges and transparency across the team.
 
 ## Decision Making
-*How are decisions made in your team?*
+All important decisions were made through unanimous agreement. This ensured that every team member was aligned with the direction and felt ownership of the solution.
