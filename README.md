@@ -23,12 +23,12 @@ Update Possible Challenge: OTA updates for ECUs
 
 ## Core Idea
 Implement a CI/CD-driven OTA release process with real-time monitoring and automated decision logic.
-Deploy updates via canary rollout (e.g., 0.5% of devices), expand rollout progressively if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
+Deploy updates via canary rollout (e.g., 0.5% of vehicles), expand rollout progressively if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
 This ensures safe, scalable, and adaptive OTA deployments.
 
 ```mermaid
 flowchart TD
-    A[Start OTA Release] --> B[Canary Rollout e.g. 0.5% of devices]
+    A[Start OTA Release] --> B[Canary Rollout e.g. 0.5% of vehicles]
     B --> C[Real-time Monitoring & Telemetry]
     C --> D{Errors within threshold?}
     
