@@ -1,13 +1,13 @@
 # SolutionPlan_Template
 
-<img src="assets/coota_logo.png" alt="Coota Logo" width="500px" />
+
 
 # 1. Your Team at a Glance
 
-## COOTA / Updating mobility, orchestrating trust.
-*Canary Orchestrator for Over The Air*
+## COOTA - Updating mobility, orchestrating trust.
+Canary Orchestrator for Over The Air
 
-*Feel free to include a picture representing your team*
+<img src="assets/coota_logo.png" alt="Coota Logo" width="500px" />
 
 ## Team Members
 | Name             | GitHub Handle | Role(s)      |
