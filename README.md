@@ -5,7 +5,7 @@
 # 1. Your Team at a Glance
 
 ## COOTA - Updating mobility, orchestrating trust.
-Canary Orchestrator for Over The Air
+Canary Orchestrator for Over-The-Air
 
 <img src="assets/coota_logo.png" alt="Coota Logo" width="500px" />
 
@@ -22,8 +22,8 @@ Canary Orchestrator for Over The Air
 Update Possible Challenge: OTA updates for ECUs
 
 ## Core Idea
-Implement a CI/CD-driven OTA release process with real-time monitoring and automated decision logic.
-Deploy updates via canary rollout (e.g., 0.5% of vehicles), expand rollout progressively if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
+To implement an OTA release process with real-time monitoring and automated decision logic.
+The solution will deploy updates via a canary release (e.g., 0.5% of vehicles), progressively expanding the rollout if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
 This ensures safe, scalable, and adaptive OTA deployments.
 
 ```mermaid
@@ -49,7 +49,7 @@ flowchart TD
 ## Development Process
 Development Process - Iterative approach
 1.  Deploy & rollback – The first milestone was making deployment and rollback mechanisms functional.
-2.  Error monitoring – Functional code was connected to COOTA module to read errors and validate the next course of action.
+2.  Error monitoring – Functional code was connected to C∞TA module to read errors and validate the next course of action.
 3.  Scalable rollout – Once stability was achieved, we focused on enabling deployment at scale.
 4. Team division – To move faster, we split into three focus areas:
 
@@ -59,14 +59,14 @@ Development Process - Iterative approach
 
 
 ### Planning & Tracking
-We started with a brainstorming session to define the core idea and outline our priorities. From there, progress was tracked through constant update checks and quick syncs to adapt to new challenges and keep everyone aligned.
+We started with a brainstorming session to define the core idea and outline our priorities. From there, progress was tracked through constant update checks and quick syncs, allowing for adaptation to new challenges and keeping everyone aligned.
 
 ### Quality Assurance
-Given the short timeframe, we focused on starting small and writing clean and iteratively scale, to ensure clarity. We hope that this approach can make collaboration smoother and reduce integration issues.
+Given the short timeframe, we focused on starting small and writing clean and iteratively scaling to ensure clarity. We hope that this approach can make collaboration smoother and reduce integration issues.
 
 
 ## Communication
 Communication is happening both in person during the hackathon and through a shared Slack group channel, ensuring quick exchanges and transparency across the team.
 
 ## Decision Making
-All important decisions are being made through unanimous agreement. This ensures that every team member is aligned with the direction and feel ownership of the solution.
+All important decisions are being made through unanimous agreement. This ensures that every team member is aligned with the direction and feels a sense of ownership over the solution.
