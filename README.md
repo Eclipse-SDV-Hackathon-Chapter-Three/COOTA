@@ -12,7 +12,7 @@ Canary Orchestrator for Over The Air
 ## Team Members
 | Name             | GitHub Handle | Role(s)      |
 |------------------|---------------|--------------|
-| Joao Chagas      | joaocalixto   | Pitch writer |
+| João Chagas      | joaocalixto   | Pitch writer |
 | João Barradas    |  jbarradas | front-end    |
 | Gustavo Calonico |  randomcash  | back-end     |
 | Nuno Valente     |  nuvan | back-end     |
