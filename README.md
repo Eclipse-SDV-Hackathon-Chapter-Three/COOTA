@@ -62,7 +62,7 @@ Development Process - Iterative approach
 We started with a brainstorming session to define the core idea and outline our priorities. From there, progress was tracked through constant update checks and quick syncs to adapt to new challenges and keep everyone aligned.
 
 ### Quality Assurance
-Given the short timeframe, we focused on start small writing clean and iteratively scale, to ensure clarity. This approach made collaboration smoother and reduced integration issues.
+Given the short timeframe, we focused on starting small and writing clean and iteratively scale, to ensure clarity. This approach made collaboration smoother and reduced integration issues.
 
 
 ## Communication
