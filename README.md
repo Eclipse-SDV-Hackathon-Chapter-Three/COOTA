@@ -23,12 +23,12 @@ Update Possible Challenge: OTA updates for ECUs
 
 ## Core Idea
 To implement an OTA release process with real-time monitoring and automated decision logic.
-The solution will deploy updates via a canary release (e.g., 0.5% of vehicles), progressively expanding the rollout if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
+The solution will deploy updates via a canary release (e.g., 0.5% of devices), progressively expanding the rollout if telemetry shows no regression, or trigger an automatic rollback when error budgets are exceeded.
 This ensures safe, scalable, and adaptive OTA deployments.
 
 ```mermaid
 flowchart TD
-    A[Start OTA Release] --> B[Canary Rollout e.g. 0.5% of vehicles]
+    A[Start OTA Release] --> B[Canary Rollout e.g. 0.5% of devices]
     B --> C[Real-time Monitoring & Telemetry]
     C --> D{Errors within threshold?}
     
@@ -38,7 +38,7 @@ flowchart TD
     D -- No --> F[Automatic Rollback]
     F --> G[Restore Previous Stable Version]
     
-    E --> H[Full Deployment All Vehicles]
+    E --> H[Full Deployment All Devices]
     H --> I[Safe, Scalable & Adaptive OTA Deployment]
 ```
 
