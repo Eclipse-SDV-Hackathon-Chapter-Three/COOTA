@@ -6,7 +6,7 @@ services:
     networks:
       - internal
     volumes: 
-      - grafana-data:/var/lib/grtafana
+      - grafana-data:/var/lib/grafana
 
   influxdb3-core:
     container_name: influxdb3-core
