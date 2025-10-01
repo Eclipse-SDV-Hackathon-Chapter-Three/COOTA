@@ -8,8 +8,8 @@ type FormValues = {
   targets: string[];
 };
 
-const SOFTWARE_VERSIONS = ["6.0.0", "7.0.0", "8.0.0"];
-const TARGETS = ["Target-A", "Target-B", "Target-C"];
+const SOFTWARE_VERSIONS = ["v1", "v2", "v3"];
+const TARGETS = ["Fleet A", "Fleet B", "Fleet C"];
 
 const CampaignForm: React.FC = () => {
   const { register, handleSubmit } = useForm<FormValues>({
@@ -123,7 +123,7 @@ const CampaignForm: React.FC = () => {
         <label className="block font-medium">Source Version</label>
         <select
           {...register("sourceVersion")}
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full margin-left-right-m"
         >
           {SOFTWARE_VERSIONS.map((v) => (
             <option key={v} value={v}>
@@ -137,7 +137,7 @@ const CampaignForm: React.FC = () => {
         <label className="block font-medium">Target Version</label>
         <select
           {...register("targetVersion")}
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full margin-left-right-m"
         >
           {SOFTWARE_VERSIONS.map((v) => (
             <option key={v} value={v}>
@@ -155,7 +155,7 @@ const CampaignForm: React.FC = () => {
         </div>
         <div className="space-y-2 mt-2">
           {TARGETS.map((target) => (
-            <label key={target} className="flex items-center space-x-2">
+            <label key={target} className="flex items-center space-x-2 margin-left-right-s">
               <input type="checkbox" value={target} {...register("targets")} />
               <span>{target}</span>
             </label>
@@ -163,7 +163,7 @@ const CampaignForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="margin-top-bottom">
+      <div className="margin-top-bottom-l">
         Current Status: {currentStatus}
       </div>
 
