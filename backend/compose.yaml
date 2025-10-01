@@ -28,6 +28,9 @@ services:
     container_name: campaign-manager
     build: 
       context: ./campaign_manager
+    environment:
+      - INFLUXDB_HOST=http://influxdb3-core:8181
+      - INFLUXDB_DATABASE=grafana
     networks:
       - internal
     ports:
