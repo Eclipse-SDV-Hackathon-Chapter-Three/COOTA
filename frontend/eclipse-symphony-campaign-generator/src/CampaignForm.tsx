@@ -23,7 +23,8 @@ const CampaignForm: React.FC = () => {
   const [currentStatus, setCurrentStatus] = useState("Stopped");
 
   const onSubmit = async (data: FormValues) => {
-    const campaignName = `canary-v-${data.targetVersion}}`;
+    console.log("form data", data);
+    const campaignName = `canary-v-${data.targetVersion}`;
 
     const body = {
       firstStage: "deploy-v1",

@@ -5,7 +5,10 @@ function App() {
 
   return (
     <>
-      <h1>Eclipse Symphony Campaign Generator</h1>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+        <img src='coota_logo.png' alt="COOTA Logo" style={{ height: 270 }} />
+      </div>
+      <h1>Campaign Activator</h1>
       <CampaignForm />
     </>
   )
