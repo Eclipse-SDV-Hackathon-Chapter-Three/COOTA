@@ -1,0 +1,15 @@
+FROM python:3-alpine
+
+COPY requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
+COPY vehicleSignalSender.py vehicleSignalSender.py
+
+ENV VEHICLE_ID="VIN0001"
+ENV APP="logger"
+ENV APP_VERSION="v1"
+ENV MIN_MEASURED_VALUE="30"
+ENV MAX_MEASURED_VALUE="70"
+
+CMD ["python", "./vehicleSignalSender.py"]
