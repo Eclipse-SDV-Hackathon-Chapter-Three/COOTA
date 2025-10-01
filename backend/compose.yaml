@@ -25,6 +25,16 @@ services:
       - --plugin-dir=/var/lib/influxdb3/plugins
 
 
+#  campaign-manager:
+#    container_name: campaign-manager
+#    build: 
+#      context: ./campaign_manager
+#      no_cache: true
+#    networks:
+#      - internal
+#    ports:
+#      - 8080:5000
+
 networks:
   internal:
     driver: bridge
