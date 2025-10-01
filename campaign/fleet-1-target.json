@@ -1,0 +1,26 @@
+{
+    "metadata": {
+        "name": "fleet-1-target"
+    },
+    "spec": {
+        "displayName": "Fleet 1 Target",
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "ankaios",
+                        "provider": "providers.target.mqtt",
+                        "config": {
+                            "name": "proxy",
+                            "brokerAddress": "tcp://127.0.0.1:1883",
+                            "clientID": "symphony",
+                            "requestTopic": "coa-request",
+                            "responseTopic": "coa-response",
+                            "timeoutSeconds": "30"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

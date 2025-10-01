@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # Fleet 1 - Single vehicle
+  vehicle-25555:
+    build:
+      context: .
+      dockerfile: Dockerfile.vehicle
+    container_name: vehicle-25555
+    privileged: true
+    network_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./configs/vehicle-25551.json:/config/vehicle.json:ro
+      - ../symphony/providers:/extensions:ro
+    environment:
+      - VEHICLE_VIN=VIN25555
+      - FLEET_ID=1
+
+  # Fleet 2 - Three vehicles
+  vehicle-25552:
+    build:
+      context: .
+      dockerfile: Dockerfile.vehicle
+    container_name: vehicle-25552
+    privileged: true
+    network_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./configs/vehicle-25552.json:/config/vehicle.json:ro
+      - ../symphony/providers:/extensions:ro
+    environment:
+      - VEHICLE_VIN=VIN25552
+      - FLEET_ID=2
+
+  vehicle-25553:
+    build:
+      context: .
+      dockerfile: Dockerfile.vehicle
+    container_name: vehicle-25553
+    privileged: true
+    network_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./configs/vehicle-25553.json:/config/vehicle.json:ro
+      - ../symphony/providers:/extensions:ro
+    environment:
+      - VEHICLE_VIN=VIN25553
+      - FLEET_ID=2
+
+  vehicle-25554:
+    build:
+      context: .
+      dockerfile: Dockerfile.vehicle
+    container_name: vehicle-25554
+    privileged: true
+    network_mode: host
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - ./configs/vehicle-25554.json:/config/vehicle.json:ro
+      - ../symphony/providers:/extensions:ro
+    environment:
+      - VEHICLE_VIN=VIN25554
+      - FLEET_ID=2

@@ -1,0 +1,818 @@
+type: collection.insomnia.rest/5.0
+name: COOTA
+meta:
+  id: wrk_97e0dd20b66e47d299f25abe982a9ae3
+  created: 1759318215938
+  modified: 1759323279044
+  description: ""
+collection:
+  - name: Campaigns
+    meta:
+      id: fld_05571ad2b4354e789e82083d5a21c882
+      created: 1696118400000
+      modified: 1696118400000
+      sortKey: -1696118300000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/campaigns"
+        name: List Campaigns
+        meta:
+          id: req_7c91689daa3f4aff98fa15c80a23d549
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: List all campaigns
+          sortKey: -1696118100000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/campaigns/{{ _.campaign_name }}-v-{{_.campaign_version}}"
+        name: Get Campaign
+        meta:
+          id: req_81d7790bf16d42a1ae3af164bfd92125
+          created: 1696118400000
+          modified: 1759323135132
+          isPrivate: false
+          description: Get campaign details
+          sortKey: -1696118200000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/campaigns/{{ _.campaign_name }}-v-{{ _.campaign_version
+          }}"
+        name: Create Campaign
+        meta:
+          id: req_b58a7cc7e49a459b84c82e4e2532753c
+          created: 1696118400000
+          modified: 1759323116890
+          isPrivate: false
+          description: >-
+            Create a new campaign workflow.
+
+
+            This example is based on the canary deployment pattern with multiple
+            stages:
+
+            - deploy-v2: Deploy new version
+
+            - canary-ingress: Setup canary routing
+
+            - test: HTTP health check
+
+            - weight-counter: Track success/failure
+
+            - adjust-weight: Gradually increase traffic
+
+            - finalize: Complete rollout OR roll-back: Revert on failure
+
+
+            Each stage has a stageSelector to control workflow progression.
+          sortKey: -1696118300000
+        method: POST
+        body:
+          mimeType: application/json
+          text: >-
+            {
+              "metadata": {
+                "name": "{{ _.campaign_name }}-v-{{ _.campaign_version }}"
+              },
+              "spec": {
+                "rootResource": "{{ _.campaign_name }}",
+                "firstStage": "deploy-v2",
+                "selfDriving": true,
+                "stages": {
+                  "deploy-v2": {
+                    "name": "deploy-v2",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "backend-v2",
+                        "type": "container",
+                        "metadata": {
+                          "service.ports": "[{\"name\":\"port3013\",\"port\": 3013,\"targetPort\":5000}]",
+                          "service.type": "LoadBalancer"
+                        },
+                        "properties": {
+                          "deployment.replicas": "#1",
+                          "container.ports": "[{\"containerPort\":5000,\"protocol\":\"TCP\"}]",
+                          "container.image": "ghcr.io/eclipse-symphony/sample-flask-app:latest",
+                          "env.APP_VERSION": "This_is_version_2"
+                        }
+                      },
+                      "patchAction": "add"
+                    },
+                    "stageSelector": "canary-ingress"
+                  },
+                  "{{_.campaign_name}}-v-{{ _.campaign_version }}-ingress": {
+                    "name": "canary-ingress",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "canary-ingress",
+                        "type": "ingress",
+                        "metadata": {
+                          "annotations.nginx.ingress.kubernetes.io/canary": "true",
+                          "annotations.nginx.ingress.kubernetes.io/canary-weight": "10",
+                          "annotations.nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+                          "annotations.nginx.ingress.kubernetes.io/use-regex": "true"
+                        },
+                        "properties": {
+                          "ingressClassName": "nginx",
+                          "rules": [
+                            {
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/api()(.*)",
+                                    "pathType": "ImplementationSpecific",
+                                    "backend": {
+                                      "service": {
+                                        "name": "backend-v2",
+                                        "port": {
+                                          "number": 3013
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "patchAction": "add"
+                    },
+                    "stageSelector": "before-test"
+                  },
+                  "before-test": {
+                    "name": "before-test",
+                    "provider": "providers.stage.delay",
+                    "inputs": {
+                      "delay": "180s"
+                    },
+                    "stageSelector": "test"
+                  },
+                  "test": {
+                    "name": "test",
+                    "provider": "providers.stage.http",
+                    "inputs": {
+                      "url": "http://backend-v2:3013/",
+                      "method": "GET"
+                    },
+                    "stageSelector": "delay"
+                  },
+                  "delay": {
+                    "name": "delay",
+                    "provider": "providers.stage.delay",
+                    "inputs": {
+                      "delay": "30s"
+                    },
+                    "stageSelector": "weight-counter"
+                  },
+                  "weight-counter": {
+                    "name": "weight-counter",
+                    "provider": "providers.stage.counter",
+                    "inputs": {
+                      "weight": "100"
+                    },
+                    "stageSelector": ""
+                  },
+                  "roll-back": {
+                    "name": "roll-back",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "canary-ingress",
+                        "type": "ingress"
+                      },
+                      "patchAction": "remove"
+                    },
+                    "stageSelector": "roll-back-2"
+                  },
+                  "roll-back-2": {
+                    "name": "roll-back-2",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "backend-v2",
+                        "type": "container"
+                      },
+                      "patchAction": "remove"
+                    },
+                    "stageSelector": ""
+                  },
+                  "finalize": {
+                    "name": "finalize",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "ingress",
+                        "type": "ingress",
+                        "metadata": {
+                          "annotations.nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+                          "annotations.nginx.ingress.kubernetes.io/use-regex": "true"
+                        },
+                        "properties": {
+                          "ingressClassName": "nginx",
+                          "rules": [
+                            {
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/api()(.*)",
+                                    "pathType": "ImplementationSpecific",
+                                    "backend": {
+                                      "service": {
+                                        "name": "backend-v2",
+                                        "port": {
+                                          "number": 3013
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "patchAction": "add"
+                    },
+                    "stageSelector": "finalize-2"
+                  },
+                  "finalize-2": {
+                    "name": "finalize-2",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "{{_.campaign_name}}-v-{{ _.campaign_version }}-ingress",
+                        "type": "ingress"
+                      },
+                      "patchAction": "remove"
+                    },
+                    "stageSelector": "finalize-3"
+                  },
+                  "finalize-3": {
+                    "name": "finalize-3",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "backend-v1",
+                        "type": "container"
+                      },
+                      "patchAction": "remove"
+                    },
+                    "stageSelector": ""
+                  },
+                  "adjust-weight": {
+                    "name": "adjust-weight",
+                    "provider": "providers.stage.patch",
+                    "config": {
+                      "baseUrl": "{{ _.base_url }}",
+                      "user": "{{ _.username }}",
+                      "password": "{{ _.password }}"
+                    },
+                    "inputs": {
+                      "objectType": "solution",
+                      "objectName": "test-app:version1",
+                      "patchSource": "inline",
+                      "patchContent": {
+                        "name": "canary-ingress",
+                        "type": "ingress",
+                        "metadata": {
+                          "annotations.nginx.ingress.kubernetes.io/canary": "true",
+                          "annotations.nginx.ingress.kubernetes.io/canary-weight": "100",
+                          "annotations.nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+                          "annotations.nginx.ingress.kubernetes.io/use-regex": "true"
+                        },
+                        "properties": {
+                          "ingressClassName": "nginx",
+                          "rules": [
+                            {
+                              "http": {
+                                "paths": [
+                                  {
+                                    "path": "/api()(.*)",
+                                    "pathType": "ImplementationSpecific",
+                                    "backend": {
+                                      "service": {
+                                        "name": "backend-v2",
+                                        "port": {
+                                          "number": 3013
+                                        }
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      "patchAction": "add"
+                    },
+                    "stageSelector": "test"
+                  }
+                }
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/campaigns/{{ _.campaign_name }}-v-{{ _.campaign_version
+          }}"
+        name: Delete Campaign
+        meta:
+          id: req_b76dae82cb7b41d5b91db3e91656347d
+          created: 1696118400000
+          modified: 1759323148021
+          isPrivate: false
+          description: Delete a campaign
+          sortKey: -1696118000000
+        method: DELETE
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/campaigns/{{ _.campaign_name }}-v-{{_.campaign_version}}"
+        name: Get Campaign Spec YAML
+        meta:
+          id: req_df79c43ba98c4e909da0aceda947e0ca
+          created: 1696118400000
+          modified: 1759323164547
+          isPrivate: false
+          description: Get campaign spec in YAML format
+          sortKey: -1696117900000
+        method: GET
+        parameters:
+          - name: doc-type
+            value: yaml
+          - name: path
+            value: $.spec
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Activations
+    meta:
+      id: fld_4e5ec6a23c5f4731b5749e4773661fc5
+      created: 1696118400000
+      modified: 1696118400000
+      sortKey: -1696118200000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/stage/activations"
+        name: Get Activation Status
+        meta:
+          id: req_65357c4bf98c4c488db84a796784fc02
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: Get detailed activation status
+          sortKey: -1696117500000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "campaign": "{{ _.campaign_name }}",
+              "activation": "{{ _.activation_name }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/activations/registry/{{ _.activation_name }}"
+        name: Create Activation (Execute Campaign)
+        meta:
+          id: req_81d0a2b6ebd842dd9be02bcdefdca813
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: Create an activation to execute a campaign
+          sortKey: -1696117800000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "spec": {
+                "campaign": "{{ _.campaign_name }}",
+                "name": "{{ _.activation_name }}",
+                "stage": "",
+                "inputs": {
+                  "foo": 0
+                }
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/activations/registry/{{ _.activation_name }}"
+        name: Get Activation
+        meta:
+          id: req_b382ba33ef28420e845d9129d190da52
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: Get activation details
+          sortKey: -1696117700000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/activations/registry"
+        name: List Activations
+        meta:
+          id: req_bf17a28ae76b4ba0aedd28d52d53817f
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: List all activations
+          sortKey: -1696117600000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Targets
+    meta:
+      id: fld_6333879876964a12821e886fb9a3f4c9
+      created: 1696118400000
+      modified: 1696118400000
+      sortKey: -1696118000000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/targets/registry/{{ _.target_name }}"
+        name: Create Target
+        meta:
+          id: req_47dfb8029e2a4c1f924aaabf09535dc0
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: Create a new target
+          sortKey: -1696117200000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "metadata": {
+                "labels": {
+                  "env": "dev"
+                }
+              },
+              "spec": {
+                "displayName": "{{ _.target_name }}",
+                "topologies": [
+                  {
+                    "bindings": [
+                      {
+                        "role": "instance",
+                        "provider": "providers.target.k8s",
+                        "config": {
+                          "inCluster": "true",
+                          "deploymentStrategy": "services"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/targets/registry"
+        name: List Targets
+        meta:
+          id: req_e04b8d68a78f4cfc8cc1a6f1c8ecd4ce
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: List all targets
+          sortKey: -1696117100000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Authentication
+    meta:
+      id: fld_9696aa9c85f648c79b4f315f526ceb60
+      created: 1696118400000
+      modified: 1759323247363
+      sortKey: -1696118400000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/users/auth"
+        name: User Auth
+        meta:
+          id: req_0ab4f3c9732645c18d1555467d4173b3
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: >-
+            Authenticate and get access token.
+
+
+            This request automatically saves the accessToken to the
+            'access_token' environment variable.
+
+
+            Default credentials:
+
+            - Username: admin
+
+            - Password: (empty)
+          sortKey: -1696118400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "username": "{{ _.username }}",
+              "password": "{{ _.password }}"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        scripts:
+          afterResponse: >-
+            const response = await insomnia.response.json();
+
+            if (response && response.accessToken) {
+              await insomnia.environment.set('access_token', response.accessToken);
+              console.log('Access token saved to environment variable: access_token');
+            }
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Solutions
+    meta:
+      id: fld_efbdd61ac3124212a0435a1f23c7f7a9
+      created: 1696118400000
+      modified: 1696118400000
+      sortKey: -1696118100000
+      description: ""
+    children:
+      - url: "{{ _.base_url }}/solutions"
+        name: List Solutions
+        meta:
+          id: req_d30abc04bef942e1a56371709c04eb55
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: List all solutions
+          sortKey: -1696117300000
+        method: GET
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.base_url }}/solutions/{{ _.solution_name }}"
+        name: Create Solution
+        meta:
+          id: req_ff7d663882a041839ac8b43d3f91e19e
+          created: 1696118400000
+          modified: 1696118400000
+          isPrivate: false
+          description: Create a new solution
+          sortKey: -1696117400000
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "metadata": {
+                "labels": {
+                  "env": "dev"
+                }
+              },
+              "spec": {
+                "displayName": "{{ _.solution_name }}",
+                "components": [
+                  {
+                    "name": "{{ _.solution_name }}",
+                    "type": "container",
+                    "properties": {
+                      "container.image": "redis:latest"
+                    }
+                  }
+                ],
+                "metadata": {
+                  "foo": "bar"
+                }
+              }
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: "{{ _.access_token }}"
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_c2872b0350b8ad2afb3ba6878cc32a4972450c36
+    created: 1759318215942
+    modified: 1759323247351
+environments:
+  name: Base Environment
+  meta:
+    id: env_c2872b0350b8ad2afb3ba6878cc32a4972450c36
+    created: 1759318215940
+    modified: 1759323247362
+    isPrivate: false
+  subEnvironments:
+    - name: Production
+      meta:
+        id: env_cedccbf66a0e48cfab690985ada67ac0
+        created: 1696118400000
+        modified: 1759323247360
+        isPrivate: false
+        sortKey: 1696118400001
+      data:
+        base_url: http://localhost:8082/v1alpha2
+        username: admin
+        password: ""
+        access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDA5NjQ3LCJuYmYiOjE3NTkzMjMyNDcsImlhdCI6MTc1OTMyMzI0NywianRpIjoiMSJ9.BSzWOlvNk0DPnhgMSRZSy-yollpsrSKRSX6zfpTZqmE
+        campaign_name: canary
+        campaign_version: "1"
+        activation_name: canary_activation
+        solution_name: canary_solution
+        target_name: canary_target
+      color: "#ff0000"

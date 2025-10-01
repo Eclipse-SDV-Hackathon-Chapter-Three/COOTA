@@ -1,0 +1,10 @@
+{
+  "VIN": "VIN25555",
+  "FleetID": 1,
+  "AgentName": "agent_A",
+  "Ports": {
+    "ankaios": 25555,
+    "update_trigger": 5508,
+    "dashboard": 5009
+  }
+}

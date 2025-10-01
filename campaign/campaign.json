@@ -1,0 +1,83 @@
+{
+    "metadata": {
+        "name": "fleet-app-campaign-v-1"
+    },
+    "spec": {
+        "rootResource": "fleet-app-campaign",
+        "firstStage": "test-stage-entry",
+        "selfDriving": true,
+        "stages": {
+            "test-stage-entry": {
+                "name": "test-stage-entry",
+                "provider": "providers.stage.create",
+                "config": {
+                    "user": "admin",
+                    "password": "",
+                    "wait.count": 5,
+                    "wait.interval": 5
+                },
+                "inputs": {
+                    "action": "create",
+                    "objectName": "fleet-app-test-instance",
+                    "objectType": "instance",
+                    "object": {
+                        "metadata": {
+                            "name": "fleet-app-test-instance"
+                        },
+                        "spec": {
+                            "solution": "fleet-app-v-1",
+                            "target": {
+                                "name": "fleet-1-target"
+                            }
+                        }
+                    }
+                },
+                "stageSelector": "wait-stage"
+            },
+            "wait-stage": {
+                "name": "wait-stage",
+                "provider": "providers.stage.delay",
+                "inputs": {
+                    "delay": "5s"
+                },
+                "stageSelector": "validation-stage"
+            },
+            "validation-stage": {
+                "name": "validation-stage",
+                "provider": "providers.stage.http",
+                "inputs": {
+                    "url": "https://jsonplaceholder.typicode.com/posts/1",
+                    "method": "GET"
+                },
+                "stageSelector": "production-stage"
+            },
+            "production-stage": {
+                "name": "production-stage",
+                "provider": "providers.stage.create",
+                "config": {
+                    "user": "admin",
+                    "password": "",
+                    "wait.count": 2,
+                    "wait.interval": 2
+                },
+                "inputs": {
+                    "action": "create",
+                    "objectName": "fleet-app-prod-instance",
+                    "objectType": "instance",
+                    "object": {
+                        "metadata": {
+                            "name": "fleet-app-prod-instance"
+                        },
+                        "spec": {
+                            "solution": "fleet-app-v-1",
+                            "target": {
+                                "name": "fleet-2-target"
+                            }
+                        }
+                    }
+                },
+                "stageSelector": ""
+            }
+        }
+    }
+}

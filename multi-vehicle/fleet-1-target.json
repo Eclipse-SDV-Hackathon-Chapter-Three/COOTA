@@ -1,0 +1,37 @@
+{
+    "metadata": {
+        "name": "fleet-1-target"
+    },
+    "spec": {
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "fleet-1-app",   
+                "type": "ankaios",             
+                "properties": {
+                    "ankaios.runtime": "podman",
+                    "ankaios.restartPolicy": "ALWAYS",
+                    "ankaios.runtimeConfig": "image: localhost:5000/fleet-app:latest\ncommandOptions: [\"-e\", \"VIN=VIN25555\"]"                   
+                }
+            }
+        ],
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "ankaios",
+                        "provider": "providers.target.mqtt",
+                        "config": {
+                            "name": "proxy",
+                            "brokerAddress": "tcp://127.0.0.1:1883",
+                            "clientID": "symphony",
+                            "requestTopic": "coa-request",
+                            "responseTopic": "coa-response",
+                            "timeoutSeconds": "30"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
