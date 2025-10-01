@@ -8,7 +8,7 @@ function App() {
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
         <img src='coota_logo.png' alt="COOTA Logo" style={{ height: 270 }} />
       </div>
-      <h1>Campaign Activator</h1>
+      <h1>Campaign Launcher</h1>
       <CampaignForm />
     </>
   )

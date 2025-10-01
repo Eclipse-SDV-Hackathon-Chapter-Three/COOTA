@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import campaign from "./campaign/campaign.json";
+import campaign2 from "./campaign/campaign_example.json";
+
 
 type FormValues = {
   sourceVersion: string;
@@ -20,54 +23,61 @@ const CampaignForm: React.FC = () => {
     },
   });
   const [isCreating, setIsCreating] = useState(false);
+  const [isActivating, setIsActivating] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("Stopped");
 
   const onSubmit = async (data: FormValues) => {
     console.log("form data", data);
-    const campaignName = `canary-v-${data.targetVersion}`;
+    // const campaignName = `canary-v-${data.targetVersion}`;
+    const campaignName = campaign.metadata.name;
 
-    const body = {
-      firstStage: "deploy-v1",
-      selfDriving: true,
-      stages: {
-        "deploy-v1": {
-          name: "Deploy Old Version",
-          provider: "providers.stage.patch",
-          inputs: {
-            containerImage: `redis:${data.sourceVersion}`,
-            targets: data.targets,
-          },
-          stageSelector: "",
-        },
-        "deploy-v2": {
-          name: "Deploy New Version",
-          provider: "providers.stage.patch",
-          inputs: {
-            containerImage: `redis:${data.targetVersion}`,
-            targets: data.targets,
-          },
-          stageSelector: "",
-        },
-        "canary-traffic": {
-          name: "Canary Traffic Shift",
-          provider: "providers.stage.counter",
-          inputs: {
-            trafficPercentage: 10,
-            targets: data.targets,
-          },
-          stageSelector: "",
-        },
-        "full-rollout": {
-          name: "Full Traffic Shift",
-          provider: "providers.stage.counter",
-          inputs: {
-            trafficPercentage: 100,
-            targets: data.targets,
-          },
-          stageSelector: "",
-        },
-      },
-    };
+    // const body = {
+    //   firstStage: "deploy-v1",
+    //   selfDriving: true,
+    //   stages: {
+    //     "deploy-v1": {
+    //       name: "Deploy Old Version",
+    //       provider: "providers.stage.patch",
+    //       inputs: {
+    //         containerImage: `redis:${data.sourceVersion}`,
+    //         targets: data.targets,
+    //       },
+    //       stageSelector: "",
+    //     },
+    //     "deploy-v2": {
+    //       name: "Deploy New Version",
+    //       provider: "providers.stage.patch",
+    //       inputs: {
+    //         containerImage: `redis:${data.targetVersion}`,
+    //         targets: data.targets,
+    //       },
+    //       stageSelector: "",
+    //     },
+    //     "canary-traffic": {
+    //       name: "Canary Traffic Shift",
+    //       provider: "providers.stage.counter",
+    //       inputs: {
+    //         trafficPercentage: 10,
+    //         targets: data.targets,
+    //       },
+    //       stageSelector: "",
+    //     },
+    //     "full-rollout": {
+    //       name: "Full Traffic Shift",
+    //       provider: "providers.stage.counter",
+    //       inputs: {
+    //         trafficPercentage: 100,
+    //         targets: data.targets,
+    //       },
+    //       stageSelector: "",
+    //     },
+    //   },
+    // };
+
+    const body = data.targetVersion === "v2" ? campaign : campaign2;
+
+    console.log("body", body);
+    console.log("body stringified", JSON.stringify(body));
 
     try {
       setIsCreating(true);
@@ -95,10 +105,22 @@ const CampaignForm: React.FC = () => {
     }
   };
 
+  const activateCampaign = async () => {
+    console.log("activating campaign");
+    try {
+      setIsActivating(true);
+    } catch (err) {
+      console.error("❌ Error activating campaign:", err);
+      alert("Error activating campaign");
+    } finally {
+      setIsActivating(false);
+    }
+  };
+
   useEffect(() => {
     let pollingInterval: number;
 
-    if (isCreating) {
+    if (isCreating || isActivating) {
       pollingInterval = setInterval(() => {
         fetch("/GET-CAMPAIGN-STATUS-ENDPOINT")
           .then((res) => res.json())
@@ -113,7 +135,7 @@ const CampaignForm: React.FC = () => {
     return () => {
       if (pollingInterval) clearInterval(pollingInterval);
     };
-  }, [isCreating]);
+  }, [isCreating, isActivating]);
 
   return (
     <form
@@ -149,19 +171,7 @@ const CampaignForm: React.FC = () => {
       </div>
 
       <div>
-        <div>
-          <label className="block font-medium">
-            <h2>Targets</h2>
-          </label>
-        </div>
-        <div className="space-y-2 mt-2">
-          {TARGETS.map((target) => (
-            <label key={target} className="flex items-center space-x-2 margin-left-right-s">
-              <input type="checkbox" value={target} {...register("targets")} />
-              <span>{target}</span>
-            </label>
-          ))}
-        </div>
+        
       </div>
 
       <div className="margin-top-bottom-l">
@@ -171,10 +181,18 @@ const CampaignForm: React.FC = () => {
       <div>
         <button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded"
-          disabled={isCreating}
+          className="bg-green-600 text-white px-4 py-2 rounded margin-left-right-s"
+          disabled={isCreating || isActivating}
         >
-          🚀 Create Canary Campaign
+          🏗️ Create Campaign
+        </button>
+        <button
+          type="button"
+          className="bg-green-600 text-white px-4 py-2 rounded margin-left-right-s"
+          onClick={activateCampaign}
+          disabled={isCreating || isActivating}
+        >
+          🚀 Activate Campaign
         </button>
       </div>
     </form>
