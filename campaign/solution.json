@@ -1,0 +1,22 @@
+{
+    "metadata": {
+        "name": "fleet-app-v-1",
+        "namespace": "default"
+    },
+    "spec": {
+        "displayName": "Fleet Management Solution",
+        "rootResource": "fleet-app",
+        "version": "1",
+        "components": [
+            {
+                "name": "fleet-app",
+                "type": "ankaios",
+                "properties": {
+                    "ankaios.runtime": "podman",
+                    "ankaios.restartPolicy": "ALWAYS",
+                    "ankaios.runtimeConfig": "image: localhost:5000/fleet-app:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"
+                }
+            }
+        ]
+    }
+}

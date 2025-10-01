@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    bash \
+    ca-certificates \
+    podman \
+    jq \
+    mosquitto-clients \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sfL https://github.com/eclipse-ankaios/ankaios/releases/download/v0.6.0/install.sh | INSTALL_ANK_SERVER_RUST_LOG=debug INSTALL_ANK_AGENT_RUST_LOG=info bash -s -- -t both
+
+ENV PATH="/root/.local/bin:$PATH"
+
+# Configure podman for rootless operation
+RUN echo 'unqualified-search-registries = ["docker.io"]' > /etc/containers/registries.conf && \
+    echo '[containers]' > /etc/containers/containers.conf && \
+    echo 'cgroup_manager = "cgroupfs"' >> /etc/containers/containers.conf
+
+# Copy startup script
+COPY startup.sh /startup.sh
+RUN chmod +x /startup.sh
+
+EXPOSE 25551
+
+CMD ["/startup.sh"]

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+export SYMPHONY_API_URL=http://localhost:8082/v1alpha2/
+
+TOKEN=$(curl -X POST -H "Content-Type: application/json" -d '{"username":"admin","password":""}' "${SYMPHONY_API_URL}users/auth" | jq -r '.accessToken')
+
+# Fleet 2 target configuration
+cat > ./fleet-2-target.json << 'EOF'
+{
+    "metadata": {
+        "name": "fleet-2-target"
+    },
+    "spec": {
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "fleet-2-app",   
+                "type": "ankaios",             
+                "properties": {
+                    "ankaios.runtime": "podman",
+                    "ankaios.restartPolicy": "ALWAYS",
+                    "ankaios.runtimeConfig": "image: localhost:5000/fleet-app:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"                   
+                }
+            }
+        ],
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "ankaios",
+                        "provider": "providers.target.mqtt",
+                        "config": {
+                            "name": "proxy",
+                            "brokerAddress": "tcp://127.0.0.1:1883",
+                            "clientID": "symphony",
+                            "requestTopic": "coa-request",
+                            "responseTopic": "coa-response",
+                            "timeoutSeconds": "30"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
+EOF
+
+curl -s -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @./fleet-2-target.json "${SYMPHONY_API_URL}targets/registry/fleet-2-target"
+
+# Prompt user to press Enter to continue after the target has been registered
+read -p "Fleet 2 target registered. Press Enter to remove..."
+
+curl -s -X DELETE -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}targets/registry/fleet-2-target"
+
+# Clean up
+rm -f ./fleet-2-target.json
