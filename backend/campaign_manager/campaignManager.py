@@ -11,13 +11,13 @@ client = InfluxDBClient3(host=host, database=database)
 
 app = Flask(__name__)
 
-def is_metric_relatively_ok(metric, version, threshold, time_window):
+def is_metric_relatively_ok(metric, table, version, threshold, time_window):
     query = f"""
     WITH avg_versions AS (
     SELECT
         CASE WHEN version = $version THEN 'current' ELSE 'others' END AS ver_group,
         AVG({metric}) AS avg_value
-    FROM my_measurement
+    FROM {table}
     WHERE time >= now() - INTERVAL '{time_window} seconds'
     GROUP BY ver_group
     )
@@ -45,7 +45,7 @@ def check_if_healthy():
     else:
         time_window = float(time_window)
 
-    if not is_metric_relatively_ok("cpu", currVersion, threshold, time_window):
+    if not is_metric_relatively_ok("battery_consumption_per_hour", 'battery_usage', currVersion, threshold, time_window):
         return Response("NOT_ACCEPTABLE", status=406)
 
     return Response("OK", status=200)
