@@ -1,0 +1,30 @@
+{
+    "metadata": {
+        "name": "my-target"
+    },
+    "spec": {
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "mock-component",
+                "type": "my_type",
+                "properties": {}
+            }
+        ],
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "my_type",
+                        "provider": "providers.target.rust",
+                        "config": {
+                            "name": "my-lib",
+                            "libFile": "/extensions/libmy_provider.so",
+                            "libHash": "eee8fd79ca4da51f492667f4ecc74f72f12cb24995c11a2edf537a72b1a20c46"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

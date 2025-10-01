@@ -1,0 +1,105 @@
+{
+  "siteInfo": {
+    "siteId": "my-agent",
+    "currentSite": {
+      "baseUrl": "",
+      "username": "",
+      "password": ""
+    }
+  },
+  "api": {
+    "pubsub": {
+      "shared": true,
+      "provider": {
+        "type": "providers.pubsub.memory",
+        "config": {}
+      }
+    },
+    "keylock": {
+      "shared": true,
+      "provider": {      
+        "type": "providers.keylock.memory",
+        "config": {
+          "mode": "Global",
+          "cleanInterval" : 30,
+          "purgeDuration" : 43200
+        }
+      }
+    },
+    "vendors": [
+      {
+        "type": "vendors.echo",
+        "route": "greetings",
+        "managers": []
+      },
+      {
+        "type": "vendors.solution",
+        "loopInterval": 15,
+        "route": "solution",
+        "managers": [
+          {
+            "name": "solution-manager",
+            "type": "managers.symphony.solution",
+            "properties": {
+              "providers.persistentstate": "mem-state",                
+              "providers.config": "mock-config",  
+              "providers.secret": "mock-secret",
+              "providers.keylock": "mem-keylock",
+              "isTarget": "true",
+              "targetNames": "pc-target",
+              "poll.enabled": "true"              
+            },
+            "providers": {
+              "mem-state": {
+                "type": "providers.state.memory",
+                "config": {}
+              },     
+              "mem-keylock": {
+                "type": "providers.keylock.memory",
+                "config": {
+                  "mode" : "Shared"
+                }
+              },         
+              "mock-config": {
+                "type": "providers.config.mock",
+                "config": {}
+              },
+              "mock-secret": {
+                "type": "providers.secret.mock",
+                "config": {}
+              },
+              "example_type": {
+                "type": "providers.target.rust",
+                "config": {
+                  "name": "mock-type",
+                  "libFile": "./providers/libmock.so",
+                  "libHash": "ce91b4e859aee15ebb0629f0728941d4e1207437dead4962c541173275955b0c"
+                }
+              },
+              "my_type": {
+                "type": "providers.target.rust",
+                "config": {
+                  "name": "my-type",
+                  "libFile": "./providers/libmy_provider.so",
+                  "libHash": "eee8fd79ca4da51f492667f4ecc74f72f12cb24995c11a2edf537a72b1a20c46"
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "bindings": [
+    {
+      "type": "bindings.mqtt",
+      "config": {
+        "brokerAddress": "tcp://localhost:1883",
+        "clientID": "symphony-agent",
+        "requestTopic": "coa-request",
+        "responseTopic": "coa-response",
+        "timeoutSeconds":  "30"
+      }
+    }
+  ]
+}

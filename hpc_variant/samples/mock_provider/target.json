@@ -1,0 +1,30 @@
+{
+    "metadata": {
+        "name": "mock-target"
+    },
+    "spec": {
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "mock-component",
+                "type": "example_type",
+                "properties": {}
+            }
+        ],
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "example_type",
+                        "provider": "providers.target.rust",
+                        "config": {
+                            "name": "mock-lib",
+                            "libFile": "/extensions/libmock.so",
+                            "libHash": "ce91b4e859aee15ebb0629f0728941d4e1207437dead4962c541173275955b0c"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
