@@ -1,7 +1,6 @@
-```
 # Fleet Health API
 
-A simple API to check the health of a fleet based on CPU metrics in InfluxDB.
+A simple API to check the health of a fleet based on battery_consumption_per_hour metrics in InfluxDB.
 
 ---
 
@@ -9,16 +8,18 @@ A simple API to check the health of a fleet based on CPU metrics in InfluxDB.
 
 1. Install dependencies:
 
-pip install influxdb-client-3 flask
+`pip install influxdb-client-3 flask`
 
 2. Optional environment variables (defaults are used if not set):
 
+```
 export INFLUXDB_HOST="http://localhost:8181"
 export INFLUXDB_DATABASE="grafana"
+```
 
 3. Run the API:
 
-python campaignManager.py
+`python campaignManager.py`
 
 ---
 
@@ -41,21 +42,20 @@ Responses:
 
 Example:
 
-GET /fleet/healthy?currVersion=1.2.0&threshold=120&time_window=3600
+`GET /fleet/healthy?currVersion=1.2.0&threshold=120&time_window=3600`
 
 Response:
 
-OK
+`OK`
 
 or
 
-NOT_ACCEPTABLE
+`NOT_ACCEPTABLE`
 
 ---
 
-Notes:
+## Notes:
 
-- Metric currently checked: cpu from measurement my_measurement
+- Metric currently checked: `battery_consumption_per_hour` from measurement `battery_usage`
 - Environment variables allow easy switching between local and production setups
-- You can extend is_metric_relatively_ok to check other metrics
-```
+- You can extend `is_metric_relatively_ok` function to check other metrics

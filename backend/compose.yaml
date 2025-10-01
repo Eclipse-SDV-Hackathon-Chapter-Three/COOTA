@@ -36,6 +36,19 @@ services:
     ports:
       - 5000:5000
 
+  mqtt-forwarder:
+    container_name: mqtt-forwarder
+    build: 
+      context: ./mqtt_forwarder
+    environment:
+      - INFLUXDB_HOST=http://influxdb3-core:8181
+      - INFLUXDB_DATABASE=grafana
+      - MQTT_TOPIC=logger/#
+      - MQTT_BROKER=localhost
+      - MQTT_PORT=1883
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge
