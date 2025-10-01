@@ -1,4 +1,3 @@
-```
 # Fleet Health API
 
 A simple API to check the health of a fleet based on CPU metrics in InfluxDB.
@@ -57,5 +56,4 @@ Notes:
 
 - Metric currently checked: cpu from measurement my_measurement
 - Environment variables allow easy switching between local and production setups
-- You can extend is_metric_relatively_ok to check other metrics
-```
+- You can extend is_metric_relatively_ok function to check other metrics
