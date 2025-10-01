@@ -1,0 +1,559 @@
+{
+	"info": {
+		"_postman_id": "97e0dd20-b66e-47d2-99f2-5abe982a9ae3",
+		"name": "COOTA",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "User Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"if (response && response.accessToken) {",
+									"    pm.environment.set('access_token', response.accessToken);",
+									"    console.log('Access token saved to environment variable: access_token');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/auth",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"auth"
+							]
+						},
+						"description": "Authenticate and get access token.\n\nThis request automatically saves the accessToken to the 'access_token' environment variable.\n\nDefault credentials:\n- Username: admin\n- Password: (empty)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Campaigns",
+			"item": [
+				{
+					"name": "List Campaigns",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/campaigns",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"campaigns"
+							]
+						},
+						"description": "List all campaigns"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaign",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/campaigns/{{campaign_name}}-v-{{campaign_version}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"campaigns",
+								"{{campaign_name}}-v-{{campaign_version}}"
+							]
+						},
+						"description": "Get campaign details"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Campaign",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metadata\": {\n    \"name\": \"{{campaign_name}}-v-{{campaign_version}}\"\n  },\n  \"spec\": {\n    \"rootResource\": \"{{campaign_name}}\",\n    \"firstStage\": \"deploy-v2\",\n    \"selfDriving\": true,\n    \"stages\": {\n      \"deploy-v2\": {\n        \"name\": \"deploy-v2\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"backend-v2\",\n            \"type\": \"container\",\n            \"metadata\": {\n              \"service.ports\": \"[{\\\"name\\\":\\\"port3013\\\",\\\"port\\\": 3013,\\\"targetPort\\\":5000}]\",\n              \"service.type\": \"LoadBalancer\"\n            },\n            \"properties\": {\n              \"deployment.replicas\": \"#1\",\n              \"container.ports\": \"[{\\\"containerPort\\\":5000,\\\"protocol\\\":\\\"TCP\\\"}]\",\n              \"container.image\": \"ghcr.io/eclipse-symphony/sample-flask-app:latest\",\n              \"env.APP_VERSION\": \"This_is_version_2\"\n            }\n          },\n          \"patchAction\": \"add\"\n        },\n        \"stageSelector\": \"canary-ingress\"\n      },\n      \"{{campaign_name}}-v-{{campaign_version}}-ingress\": {\n        \"name\": \"canary-ingress\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"canary-ingress\",\n            \"type\": \"ingress\",\n            \"metadata\": {\n              \"annotations.nginx.ingress.kubernetes.io/canary\": \"true\",\n              \"annotations.nginx.ingress.kubernetes.io/canary-weight\": \"10\",\n              \"annotations.nginx.ingress.kubernetes.io/rewrite-target\": \"/$2\",\n              \"annotations.nginx.ingress.kubernetes.io/use-regex\": \"true\"\n            },\n            \"properties\": {\n              \"ingressClassName\": \"nginx\",\n              \"rules\": [\n                {\n                  \"http\": {\n                    \"paths\": [\n                      {\n                        \"path\": \"/api()(.*)\",\n                        \"pathType\": \"ImplementationSpecific\",\n                        \"backend\": {\n                          \"service\": {\n                            \"name\": \"backend-v2\",\n                            \"port\": {\n                              \"number\": 3013\n                            }\n                          }\n                        }\n                      }\n                    ]\n                  }\n                }\n              ]\n            }\n          },\n          \"patchAction\": \"add\"\n        },\n        \"stageSelector\": \"before-test\"\n      },\n      \"before-test\": {\n        \"name\": \"before-test\",\n        \"provider\": \"providers.stage.delay\",\n        \"inputs\": {\n          \"delay\": \"180s\"\n        },\n        \"stageSelector\": \"test\"\n      },\n      \"test\": {\n        \"name\": \"test\",\n        \"provider\": \"providers.stage.http\",\n        \"inputs\": {\n          \"url\": \"http://backend-v2:3013/\",\n          \"method\": \"GET\"\n        },\n        \"stageSelector\": \"delay\"\n      },\n      \"delay\": {\n        \"name\": \"delay\",\n        \"provider\": \"providers.stage.delay\",\n        \"inputs\": {\n          \"delay\": \"30s\"\n        },\n        \"stageSelector\": \"weight-counter\"\n      },\n      \"weight-counter\": {\n        \"name\": \"weight-counter\",\n        \"provider\": \"providers.stage.counter\",\n        \"inputs\": {\n          \"weight\": \"100\"\n        },\n        \"stageSelector\": \"\"\n      },\n      \"roll-back\": {\n        \"name\": \"roll-back\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"canary-ingress\",\n            \"type\": \"ingress\"\n          },\n          \"patchAction\": \"remove\"\n        },\n        \"stageSelector\": \"roll-back-2\"\n      },\n      \"roll-back-2\": {\n        \"name\": \"roll-back-2\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"backend-v2\",\n            \"type\": \"container\"\n          },\n          \"patchAction\": \"remove\"\n        },\n        \"stageSelector\": \"\"\n      },\n      \"finalize\": {\n        \"name\": \"finalize\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"ingress\",\n            \"type\": \"ingress\",\n            \"metadata\": {\n              \"annotations.nginx.ingress.kubernetes.io/rewrite-target\": \"/$2\",\n              \"annotations.nginx.ingress.kubernetes.io/use-regex\": \"true\"\n            },\n            \"properties\": {\n              \"ingressClassName\": \"nginx\",\n              \"rules\": [\n                {\n                  \"http\": {\n                    \"paths\": [\n                      {\n                        \"path\": \"/api()(.*)\",\n                        \"pathType\": \"ImplementationSpecific\",\n                        \"backend\": {\n                          \"service\": {\n                            \"name\": \"backend-v2\",\n                            \"port\": {\n                              \"number\": 3013\n                            }\n                          }\n                        }\n                      }\n                    ]\n                  }\n                }\n              ]\n            }\n          },\n          \"patchAction\": \"add\"\n        },\n        \"stageSelector\": \"finalize-2\"\n      },\n      \"finalize-2\": {\n        \"name\": \"finalize-2\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"{{campaign_name}}-v-{{campaign_version}}-ingress\",\n            \"type\": \"ingress\"\n          },\n          \"patchAction\": \"remove\"\n        },\n        \"stageSelector\": \"finalize-3\"\n      },\n      \"finalize-3\": {\n        \"name\": \"finalize-3\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"backend-v1\",\n            \"type\": \"container\"\n          },\n          \"patchAction\": \"remove\"\n        },\n        \"stageSelector\": \"\"\n      },\n      \"adjust-weight\": {\n        \"name\": \"adjust-weight\",\n        \"provider\": \"providers.stage.patch\",\n        \"config\": {\n          \"baseUrl\": \"{{base_url}}\",\n          \"user\": \"{{username}}\",\n          \"password\": \"{{password}}\"\n        },\n        \"inputs\": {\n          \"objectType\": \"solution\",\n          \"objectName\": \"test-app:version1\",\n          \"patchSource\": \"inline\",\n          \"patchContent\": {\n            \"name\": \"canary-ingress\",\n            \"type\": \"ingress\",\n            \"metadata\": {\n              \"annotations.nginx.ingress.kubernetes.io/canary\": \"true\",\n              \"annotations.nginx.ingress.kubernetes.io/canary-weight\": \"100\",\n              \"annotations.nginx.ingress.kubernetes.io/rewrite-target\": \"/$2\",\n              \"annotations.nginx.ingress.kubernetes.io/use-regex\": \"true\"\n            },\n            \"properties\": {\n              \"ingressClassName\": \"nginx\",\n              \"rules\": [\n                {\n                  \"http\": {\n                    \"paths\": [\n                      {\n                        \"path\": \"/api()(.*)\",\n                        \"pathType\": \"ImplementationSpecific\",\n                        \"backend\": {\n                          \"service\": {\n                            \"name\": \"backend-v2\",\n                            \"port\": {\n                              \"number\": 3013\n                            }\n                          }\n                        }\n                      }\n                    ]\n                  }\n                }\n              ]\n            }\n          },\n          \"patchAction\": \"add\"\n        },\n        \"stageSelector\": \"test\"\n      }\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/campaigns/{{campaign_name}}-v-{{campaign_version}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"campaigns",
+								"{{campaign_name}}-v-{{campaign_version}}"
+							]
+						},
+						"description": "Create a new campaign workflow.\n\nThis example is based on the canary deployment pattern with multiple stages:\n- deploy-v2: Deploy new version\n- canary-ingress: Setup canary routing\n- test: HTTP health check\n- weight-counter: Track success/failure\n- adjust-weight: Gradually increase traffic\n- finalize: Complete rollout OR roll-back: Revert on failure\n\nEach stage has a stageSelector to control workflow progression."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Campaign",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/campaigns/{{campaign_name}}-v-{{campaign_version}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"campaigns",
+								"{{campaign_name}}-v-{{campaign_version}}"
+							]
+						},
+						"description": "Delete a campaign"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaign Spec YAML",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/campaigns/{{campaign_name}}-v-{{campaign_version}}?doc-type=yaml&path=$.spec",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"campaigns",
+								"{{campaign_name}}-v-{{campaign_version}}"
+							],
+							"query": [
+								{
+									"key": "doc-type",
+									"value": "yaml"
+								},
+								{
+									"key": "path",
+									"value": "$.spec"
+								}
+							]
+						},
+						"description": "Get campaign spec in YAML format"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Activations",
+			"item": [
+				{
+					"name": "Get Activation Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"campaign\": \"{{campaign_name}}\",\n  \"activation\": \"{{activation_name}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/stage/activations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"stage",
+								"activations"
+							]
+						},
+						"description": "Get detailed activation status"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Activation (Execute Campaign)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"spec\": {\n    \"campaign\": \"{{campaign_name}}\",\n    \"name\": \"{{activation_name}}\",\n    \"stage\": \"\",\n    \"inputs\": {\n      \"foo\": 0\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/activations/registry/{{activation_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activations",
+								"registry",
+								"{{activation_name}}"
+							]
+						},
+						"description": "Create an activation to execute a campaign"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Activation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/activations/registry/{{activation_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activations",
+								"registry",
+								"{{activation_name}}"
+							]
+						},
+						"description": "Get activation details"
+					},
+					"response": []
+				},
+				{
+					"name": "List Activations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/activations/registry",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"activations",
+								"registry"
+							]
+						},
+						"description": "List all activations"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Targets",
+			"item": [
+				{
+					"name": "Create Target",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metadata\": {\n    \"labels\": {\n      \"env\": \"dev\"\n    }\n  },\n  \"spec\": {\n    \"displayName\": \"{{target_name}}\",\n    \"topologies\": [\n      {\n        \"bindings\": [\n          {\n            \"role\": \"instance\",\n            \"provider\": \"providers.target.k8s\",\n            \"config\": {\n              \"inCluster\": \"true\",\n              \"deploymentStrategy\": \"services\"\n            }\n          }\n        ]\n      }\n    ]\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/targets/registry/{{target_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"targets",
+								"registry",
+								"{{target_name}}"
+							]
+						},
+						"description": "Create a new target"
+					},
+					"response": []
+				},
+				{
+					"name": "List Targets",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/targets/registry",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"targets",
+								"registry"
+							]
+						},
+						"description": "List all targets"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Solutions",
+			"item": [
+				{
+					"name": "List Solutions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/solutions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"solutions"
+							]
+						},
+						"description": "List all solutions"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Solution",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"metadata\": {\n    \"labels\": {\n      \"env\": \"dev\"\n    }\n  },\n  \"spec\": {\n    \"displayName\": \"{{solution_name}}\",\n    \"components\": [\n      {\n        \"name\": \"{{solution_name}}\",\n        \"type\": \"container\",\n        \"properties\": {\n          \"container.image\": \"redis:latest\"\n        }\n      }\n    ],\n    \"metadata\": {\n      \"foo\": \"bar\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/solutions/{{solution_name}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"solutions",
+								"{{solution_name}}"
+							]
+						},
+						"description": "Create a new solution"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8082/v1alpha2",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "campaign_name",
+			"value": "canary",
+			"type": "string"
+		},
+		{
+			"key": "campaign_version",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "activation_name",
+			"value": "canary_activation",
+			"type": "string"
+		},
+		{
+			"key": "solution_name",
+			"value": "canary_solution",
+			"type": "string"
+		},
+		{
+			"key": "target_name",
+			"value": "canary_target",
+			"type": "string"
+		}
+	]
+}
