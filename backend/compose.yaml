@@ -6,7 +6,7 @@ services:
     networks:
       - internal
     volumes: 
-      - grafana-data:/var/lib/grafana
+      - ./grafana_data:/var/lib/grafana
 
   influxdb3-core:
     container_name: influxdb3-core
@@ -15,14 +15,10 @@ services:
       - internal
     ports:
       - 8181:8181
-    command:
-      - influxdb3
-      - serve
-      - --without-auth
-      - --node-id=node0
-      - --object-store=file
-      - --data-dir=/var/lib/influxdb3/data
-      - --plugin-dir=/var/lib/influxdb3/plugins
+    volumes:
+      - ./influxdb/entrypoint.sh:/entrypoint.sh
+    command: 
+      - /entrypoint.sh
 
   campaign-manager:
     container_name: campaign-manager
@@ -36,10 +32,20 @@ services:
     ports:
       - 5000:5000
 
+  mqtt-forwarder:
+    container_name: mqtt-forwarder
+    build: 
+      context: ./mqtt_forwarder
+    environment:
+      - INFLUXDB_HOST=http://influxdb3-core:8181
+      - INFLUXDB_DATABASE=grafana
+      - MQTT_TOPIC=logger/#
+      - MQTT_BROKER=localhost
+      - MQTT_PORT=1883
+    networks:
+      - internal
+
 networks:
   internal:
     driver: bridge
-
-volumes:
-  grafana-data:
 
