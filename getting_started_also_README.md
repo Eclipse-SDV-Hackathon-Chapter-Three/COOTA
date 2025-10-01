@@ -1,4 +1,4 @@
-# 🚀 COOTA - Getting Started Guide
+# COOTA - Getting Started Guide
 
 <div align="center">
 
@@ -17,58 +17,58 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [🎯 What is COOTA?](#-what-is-coota)
-- [🏗️ Architecture Overview](#️-architecture-overview)
-- [⚡ Quick Start](#-quick-start)
-- [🔧 Prerequisites](#-prerequisites)
-- [🚀 Installation & Setup](#-installation--setup)
-- [📊 Monitoring & Dashboards](#-monitoring--dashboards)
-- [🛠️ Development](#️-development)
-- [📁 Project Structure](#-project-structure)
-- [🤝 Contributing](#-contributing)
-- [📞 Support](#-support)
+- [What is COOTA?](#what-is-coota)
+- [Architecture Overview](#architecture-overview)
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Installation & Setup](#installation--setup)
+- [Monitoring & Dashboards](#monitoring--dashboards)
+- [Development](#development)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [Support](#support)
 
 ---
 
-## 🎯 What is COOTA?
+## What is COOTA?
 
 COOTA is a sophisticated **Canary Orchestrator for Over-The-Air Updates** that implements a safe, scalable, and adaptive OTA deployment system. It uses real-time monitoring and automated decision logic to ensure secure software updates across vehicle fleets.
 
-### ✨ Key Features
+### Key Features
 
-- 🔄 **Canary Rollouts**: Start with small deployments (0.5% of devices)
-- 📊 **Real-time Monitoring**: Continuous telemetry and error tracking
-- 🛡️ **Automatic Rollback**: Instant reversion when error thresholds are exceeded
-- 📈 **Progressive Scaling**: Gradual expansion based on success metrics
-- 🎛️ **Dashboard Interface**: Visual campaign management and monitoring
+- **Canary Rollouts**: Start with small deployments (0.5% of devices)
+- **Real-time Monitoring**: Continuous telemetry and error tracking
+- **Automatic Rollback**: Instant reversion when error thresholds are exceeded
+- **Progressive Scaling**: Gradual expansion based on success metrics
+- **Dashboard Interface**: Visual campaign management and monitoring
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```mermaid
 flowchart TD
-    A[🚀 Start OTA Release] --> B[📊 Canary Rollout<br/>0.5% of devices]
-    B --> C[📡 Real-time Monitoring<br/>& Telemetry]
-    C --> D{❓ Errors within<br/>threshold?}
+    A[Start OTA Release] --> B[Canary Rollout<br/>0.5% of devices]
+    B --> C[Real-time Monitoring<br/>& Telemetry]
+    C --> D{Errors within<br/>threshold?}
     
-    D -->|✅ Yes| E[📈 Progressively Expand<br/>Rollout]
+    D -->|Yes| E[Progressively Expand<br/>Rollout]
     E --> C
     
-    D -->|❌ No| F[🔄 Automatic Rollback]
-    F --> G[🛡️ Restore Previous<br/>Stable Version]
+    D -->|No| F[Automatic Rollback]
+    F --> G[Restore Previous<br/>Stable Version]
     
-    E --> H[🌐 Full Deployment<br/>All Devices]
-    H --> I[✅ Safe, Scalable &<br/>Adaptive OTA Deployment]
+    E --> H[Full Deployment<br/>All Devices]
+    H --> I[Safe, Scalable &<br/>Adaptive OTA Deployment]
 ```
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
-### 🚀 Run the Complete System
+### Run the Complete System
 
 ```bash
 # Clone the repository
@@ -79,27 +79,28 @@ cd coota
 docker-compose -f backend/compose.yaml up -d
 ```
 
-### 🌐 Access the Applications
+### Access the Applications
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| 🎛️ **Campaign Manager** | `http://localhost:3000` | Frontend dashboard for managing OTA campaigns |
-| 📊 **Grafana Dashboard** | `http://localhost:3001` | Real-time monitoring and analytics |
-| 🔌 **MQTT Broker** | `mqtt://localhost:1883` | Message broker for vehicle communication |
-| 📈 **InfluxDB** | `http://localhost:8086` | Time-series database for telemetry |
+| **Campaign Manager** | `http://localhost:8080` | Frontend dashboard for managing OTA campaigns |
+| **Grafana Dashboard** | `http://localhost:3000` | Real-time monitoring and analytics |
+| **Campaign Manager API** | `http://localhost:5000` | Backend API for campaign orchestration |
+| **InfluxDB** | `http://localhost:8181` | Time-series database for telemetry |
+| **MQTT Broker** | `mqtt://localhost:1883` | Message broker for vehicle communication |
 
 ---
 
-## 🔧 Prerequisites
+## Prerequisites
 
 ### Required Software
 
 | Software | Version | Installation |
 |----------|---------|--------------|
-| 🐳 **Docker** | 20.10+ | [Download Docker](https://www.docker.com/get-started) |
-| 🐙 **Docker Compose** | 2.0+ | [Install Docker Compose](https://docs.docker.com/compose/install/) |
-| 🐍 **Python** | 3.8+ | [Download Python](https://python.org/downloads/) |
-| 📦 **Node.js** | 18+ | [Download Node.js](https://nodejs.org/) |
+| **Docker** | 20.10+ | [Download Docker](https://www.docker.com/get-started) |
+| **Docker Compose** | 2.0+ | [Install Docker Compose](https://docs.docker.com/compose/install/) |
+| **Python** | 3.8+ | [Download Python](https://python.org/downloads/) |
+| **Node.js** | 18+ | [Download Node.js](https://nodejs.org/) |
 
 ### System Requirements
 
@@ -109,16 +110,16 @@ docker-compose -f backend/compose.yaml up -d
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
-### 1️⃣ Clone the Repository
+### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd coota
 ```
 
-### 2️⃣ Backend Services Setup
+### 2. Backend Services Setup
 
 ```bash
 # Navigate to backend directory
@@ -131,7 +132,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### 3️⃣ Frontend Setup
+### 3. Frontend Setup
 
 ```bash
 # Navigate to frontend directory
@@ -144,23 +145,23 @@ npm install
 npm run dev
 ```
 
-### 4️⃣ Import Grafana Dashboard
+### 4. Import Grafana Dashboard
 
 ```bash
 # Import the battery consumption dashboard
 curl -X POST \
   -H "Content-Type: application/json" \
   -d @backend/grafana_backups/battery_consumption_grafana_export.json \
-  http://localhost:3001/api/dashboards/db
+  http://localhost:3000/api/dashboards/db
 
 # Alternative: Import via Grafana UI
-# 1. Open Grafana at http://localhost:3001
+# 1. Open Grafana at http://localhost:3000
 # 2. Go to "+" → "Import"
 # 3. Upload the file: backend/grafana_backups/battery_consumption_grafana_export.json
 # 4. Configure the data source (InfluxDB)
 ```
 
-### 5️⃣ Verify Installation
+### 5. Verify Installation
 
 ```bash
 # Check all containers are running
@@ -170,39 +171,39 @@ docker ps
 docker exec -it <mqtt-container> mosquitto_pub -h localhost -t "test" -m "Hello COOTA"
 
 # Verify Grafana dashboard is accessible
-curl -s http://localhost:3001/api/health
+curl -s http://localhost:3000/api/health
 ```
 
 ---
 
-## 📊 Monitoring & Dashboards
+## Monitoring & Dashboards
 
-### 🎛️ Campaign Manager Dashboard
+### Campaign Manager Dashboard
 
-Access the main dashboard at `http://localhost:3000` to:
+Access the main dashboard at `http://localhost:8080` to:
 
-- 📋 **Create Campaigns**: Set up new OTA update campaigns
-- 📊 **Monitor Progress**: Track rollout status in real-time
-- 🔄 **Manage Rollbacks**: Trigger manual rollbacks if needed
-- 📈 **View Analytics**: Analyze success rates and performance metrics
+- **Create Campaigns**: Set up new OTA update campaigns
+- **Monitor Progress**: Track rollout status in real-time
+- **Manage Rollbacks**: Trigger manual rollbacks if needed
+- **View Analytics**: Analyze success rates and performance metrics
 
-### 📊 Grafana Monitoring
+### Grafana Monitoring
 
-Access Grafana at `http://localhost:3001` for:
+Access Grafana at `http://localhost:3000` for:
 
-- 📡 **Real-time Metrics**: Live telemetry from vehicles
-- 📊 **Custom Dashboards**: Create monitoring dashboards
-- 🚨 **Alerting**: Set up automated alerts for anomalies
-- 📈 **Historical Data**: Analyze trends and patterns
+- **Real-time Metrics**: Live telemetry from vehicles
+- **Custom Dashboards**: Create monitoring dashboards
+- **Alerting**: Set up automated alerts for anomalies
+- **Historical Data**: Analyze trends and patterns
 
-#### 🔋 Battery Consumption Dashboard
+#### Battery Consumption Dashboard
 
 The project includes a pre-configured **Battery Consumption Dashboard** that provides:
 
-- 🔋 **Battery Level Monitoring**: Track vehicle battery status in real-time
-- 📊 **Consumption Analytics**: Analyze battery usage patterns
-- ⚡ **Power Metrics**: Monitor energy consumption trends
-- 🚨 **Low Battery Alerts**: Automated notifications for critical levels
+- **Battery Level Monitoring**: Track vehicle battery status in real-time
+- **Consumption Analytics**: Analyze battery usage patterns
+- **Power Metrics**: Monitor energy consumption trends
+- **Low Battery Alerts**: Automated notifications for critical levels
 
 **Dashboard Location**: `backend/grafana_backups/battery_consumption_grafana_export.json`
 
@@ -212,7 +213,7 @@ The project includes a pre-configured **Battery Consumption Dashboard** that pro
 - Multi-vehicle battery comparison
 - Automated alerting thresholds
 
-### 🔌 MQTT Monitoring
+### MQTT Monitoring
 
 Monitor MQTT traffic:
 
@@ -226,26 +227,26 @@ docker exec -it <mqtt-container> mosquitto_sub -h localhost -t "vehicles/+/signa
 
 ---
 
-## 🛠️ Development
+## Development
 
-### 🏗️ Project Structure
+### Project Structure
 
 ```
 coota/
-├── 🎛️ frontend/                    # React dashboard
+├── frontend/                    # React dashboard
 │   └── eclipse-symphony-campaign-generator/
-├── 🔧 backend/                     # Core services
-│   ├── campaign_manager/           # Campaign orchestration
+├── backend/                     # Core services
+│   ├── campaign_manager/           # Campaign manager
 │   ├── mqtt_forwarder/            # MQTT message handling
 │   └── compose.yaml               # Docker services
-├── 🚗 vehicle/                     # Vehicle simulation
+├── vehicle/                     # Vehicle simulation
 │   ├── monitor/                   # Safety monitoring
 │   └── payload/                   # Update payloads
-├── 🎭 symphony/                   # Eclipse Symphony integration
-└── 🖥️ hpc_variant/                # HPC deployment variant
+├── symphony/                   # Eclipse Symphony integration
+└── hpc_variant/                # HPC deployment variant
 ```
 
-### 🔨 Development Commands
+### Development Commands
 
 ```bash
 # Backend development
@@ -261,7 +262,7 @@ npm test
 docker-compose -f backend/compose.yaml exec campaign_manager python -m pytest
 ```
 
-### 🐛 Debugging
+### Debugging
 
 ```bash
 # View logs
@@ -276,9 +277,9 @@ docker stats
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-### 🎛️ Frontend Components
+### Frontend Components
 
 | Component | Description | Technology |
 |-----------|-------------|------------|
@@ -286,7 +287,7 @@ docker stats
 | **Real-time Monitoring** | Live status updates and metrics | WebSocket + MQTT |
 | **Analytics Views** | Historical data and reporting | Chart.js + D3.js |
 
-### 🔧 Backend Services
+### Backend Services
 
 | Service | Description | Technology |
 |---------|-------------|------------|
@@ -295,7 +296,7 @@ docker stats
 | **Grafana** | Monitoring and visualization | Grafana + InfluxDB |
 | **InfluxDB** | Time-series data storage | InfluxDB |
 
-### 🚗 Vehicle Simulation
+### Vehicle Simulation
 
 | Component | Description | Purpose |
 |-----------|-------------|---------|
@@ -305,11 +306,11 @@ docker stats
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Here's how to get started:
 
-### 🔀 Fork & Clone
+### Fork & Clone
 
 ```bash
 # Fork the repository on GitHub
@@ -318,13 +319,13 @@ git clone https://github.com/your-username/coota.git
 cd coota
 ```
 
-### 🌿 Create a Branch
+### Create a Branch
 
 ```bash
 git checkout -b feature/your-feature-name
 ```
 
-### 🧪 Test Your Changes
+### Test Your Changes
 
 ```bash
 # Run the test suite
@@ -335,7 +336,7 @@ cd frontend/eclipse-symphony-campaign-generator
 npm test
 ```
 
-### 📝 Submit a Pull Request
+### Submit a Pull Request
 
 1. Commit your changes: `git commit -m "Add amazing feature"`
 2. Push to your branch: `git push origin feature/your-feature-name`
@@ -343,16 +344,16 @@ npm test
 
 ---
 
-## 📞 Support
+## Support
 
-### 🆘 Getting Help
+### Getting Help
 
-- 📖 **Documentation**: Check the main [README.md](README.md)
-- 🐛 **Issues**: Report bugs on [GitHub Issues](https://github.com/your-repo/issues)
-- 💬 **Discussions**: Join our community discussions
-- 📧 **Contact**: Reach out to the team
+- **Documentation**: Check the main [README.md](README.md)
+- **Issues**: Report bugs on [GitHub Issues](https://github.com/your-repo/issues)
+- **Discussions**: Join our community discussions
+- **Contact**: Reach out to the team
 
-### 🏆 Team
+### Team
 
 | Name | Role | GitHub |
 |------|------|--------|
@@ -366,7 +367,7 @@ npm test
 
 <div align="center">
 
-**🚀 Ready to revolutionize OTA updates? Let's get started!**
+**Ready to revolutionize OTA updates? Let's get started!**
 
 [![Star](https://img.shields.io/github/stars/your-repo?style=social)](https://github.com/your-repo)
 [![Fork](https://img.shields.io/github/forks/your-repo?style=social)](https://github.com/your-repo/fork)
