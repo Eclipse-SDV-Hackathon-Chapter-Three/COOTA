@@ -6,7 +6,6 @@ influxdb3-python==0.16.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
-psutil==7.1.0
 pyarrow==21.0.0
 python-dateutil==2.9.0.post0
 reactivex==4.0.4
