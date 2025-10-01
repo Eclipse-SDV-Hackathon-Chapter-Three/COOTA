@@ -8,7 +8,7 @@ COPY vehicleSignalSender.py vehicleSignalSender.py
 
 ENV VEHICLE_ID="VIN0001"
 ENV APP="logger"
-ENV APP_VERSION="v1"
+ENV APP_VERSION="v3"
 ENV MIN_MEASURED_VALUE="30"
 ENV MAX_MEASURED_VALUE="70"
 
