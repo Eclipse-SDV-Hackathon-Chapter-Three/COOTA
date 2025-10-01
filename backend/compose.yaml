@@ -6,7 +6,7 @@ services:
     networks:
       - internal
     volumes: 
-      - grafana-data:/var/lib/grtafana
+      - grafana-data:/var/lib/grafana
 
   influxdb3-core:
     container_name: influxdb3-core
@@ -24,6 +24,17 @@ services:
       - --data-dir=/var/lib/influxdb3/data
       - --plugin-dir=/var/lib/influxdb3/plugins
 
+  campaign-manager:
+    container_name: campaign-manager
+    build: 
+      context: ./campaign_manager
+    environment:
+      - INFLUXDB_HOST=http://influxdb3-core:8181
+      - INFLUXDB_DATABASE=grafana
+    networks:
+      - internal
+    ports:
+      - 5000:5000
 
 networks:
   internal:
