@@ -1,0 +1,33 @@
+{
+    "metadata": {
+        "name": "pc-target"
+    },
+    "spec": {
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "mock-component",
+                "type": "example_type",
+                "properties": {}
+            }
+        ],
+        "topologies": [
+            {
+                "bindings": [
+                    {
+                        "role": "example_type",
+                        "provider": "providers.target.mqtt",
+                        "config": {
+                            "name": "proxy",
+                            "brokerAddress": "tcp://mosquitto:1883",
+                            "clientID": "symphony",
+                            "requestTopic": "coa-request",
+                            "responseTopic": "coa-response",
+                            "timeoutSeconds":  "30"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

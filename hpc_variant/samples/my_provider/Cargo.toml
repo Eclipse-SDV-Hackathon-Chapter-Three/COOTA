@@ -1,0 +1,10 @@
+[package]
+name = "my_provider"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+symphony="0.1.4"
+
+[lib]
+crate-type=["cdylib"]
