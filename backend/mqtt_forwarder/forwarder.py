@@ -12,7 +12,7 @@ MQTT_TOPIC = os.getenv("MQTT_TOPIC", "logger/#")
 
 # INFLUX settings
 INFLUXDB_URL = os.getenv("INFLUXDB_HOST", "http://localhost:8181")
-INFLUXDB_BUCKET = os.getenv("INFLUXDB_DATABASE", "grafana")
+INFLUXDB_BUCKET = os.getenv("INFLUXDB_DATABASE", "signals")
 
 # InfluxDB 3 settings
 INFLUXDB_ORG = "my_org"
@@ -51,8 +51,9 @@ def on_message(client, userdata, msg):
 
     
     # Build a Point
-    p = Point("battery_usage") \
-        .tag("vin", vin) \
+    p = Point("ev") \
+        .tag("vehicle_id", vin) \
+        .tag("VERSION", version) \
         .tag("version", version)
 
     # Add all numeric fields as metrics
