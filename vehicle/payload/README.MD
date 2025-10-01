@@ -4,18 +4,18 @@ This Python script simulates an Electric Vehicle (EV) sending telemetry data (e.
 
 ---
 
-## 🔧 Requirements
+## Requirements
 
 - Python 3.8+
 - paho-mqtt
 
 Install dependencies:
 
-pip install paho-mqtt
+`pip install paho-mqtt`
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 The script accepts both **command-line arguments** and **environment variables**:
 
@@ -32,18 +32,19 @@ The script accepts both **command-line arguments** and **environment variables**
 
 ---
 
-## ▶️ Running the Script
+## Running the Script
 
 ### Example using defaults:
 
-python ev_simulator.py
+`python vehicleSignalSender.py`
 
 ### Example with custom arguments:
 
-python ev_simulator.py --vehicle EV-123 --min_value 50 --max_value 100 --app telemetry --app_version v2 --interval 2
+`python vehicleSignalSender.py --vehicle EV-123 --min_value 50 --max_value 100 --app telemetry --app_version v2 --interval 2`
 
 You can also set environment variables instead of using CLI arguments:
 
+```
 export VEHICLE_ID=EV-123  
 export MIN_MEASURED_VALUE=50  
 export MAX_MEASURED_VALUE=100  
@@ -52,8 +53,8 @@ export MQTT_PORT=1883
 export APP=telemetry  
 export APP_VERSION=v2  
 
-python ev_simulator.py
-
+python vehicleSignalSender.py
+```
 ---
 
 ## 📥 MQTT Topic Structure
@@ -78,7 +79,7 @@ You can also pass build-time environment variables:
 ---
 
 ## ▶️ Run the Container
-
+```
 docker run -d --name ev1 \
   -e VEHICLE_ID="EV-001" \
   -e APP="telemetry" \
@@ -86,7 +87,7 @@ docker run -d --name ev1 \
   -e MIN_MEASURED_VALUE="50" \
   -e MAX_MEASURED_VALUE="100" \
   ev-simulator
-
+```
 - `-d` runs the container in the background.
 - Environment variables override defaults inside the container.
 - Each container publishes telemetry to the topic `<APP>/<APP_VERSION>/<VEHICLE_ID>`.
