@@ -2,15 +2,33 @@
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import psutil
-import time
-import os, time, random, threading, sys, termios, tty
+import os, time, random, threading, sys, termios, tty, argparse
 
+# VEHICLE_ID = "EV-001"
+# version = 1
+"""
 HOST = os.getenv("INFLUX_HOST", "http://localhost:8181")
 DB   = os.getenv("INFLUX_DB", "signals")
-# VEHICLE_ID = "EV-001"
 VEHICLE_ID = os.getenv("VEHICLE_ID", "EV-001")
-# version = 1
 VERSION = os.getenv("VERSION", "1")
+"""
+# -------------------------------
+# Args from CLI
+# -------------------------------
+parser = argparse.ArgumentParser(description="EV simulator with software version control")
+parser.add_argument("vehicle_id", type=str, help="Vehicle ID (e.g. EV-001)")
+parser.add_argument("version", type=int, choices=[1,2,3], help="Initial software version (1, 2, or 3)")
+parser.add_argument("--host", default=os.getenv("INFLUX_HOST", "http://localhost:8181"), help="InfluxDB host URL")
+parser.add_argument("--db", default=os.getenv("INFLUX_DB", "signals"), help="InfluxDB database name")
+parser.add_argument("--interval", type=int, default=5, help="Write interval in seconds")
+args = parser.parse_args()
+
+VEHICLE_ID = args.vehicle_id
+VERSION = args.version
+HOST = args.host
+DB = args.db
+INTERVAL = args.interval
+
 bucket = "signals"
 
 # Global state
