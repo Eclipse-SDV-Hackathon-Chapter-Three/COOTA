@@ -41,7 +41,7 @@ def on_connect(client, userdata, flags, rc):
 def on_disconnect(client, userdata, rc):
     global connected
     connected = False
-    print("⚠️ Disconnected from broker, trying to reconnect...")
+    print("Disconnected from broker, trying to reconnect...")
 
 # Create MQTT client
 client = mqtt.Client()
