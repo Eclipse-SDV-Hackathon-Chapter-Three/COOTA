@@ -1,0 +1,34 @@
+services:
+  grafana:
+    image: "grafana/grafana"
+    ports:
+      - "3000:3000"
+    networks:
+      - internal
+    volumes: 
+      - grafana-data:/var/lib/grtafana
+
+  influxdb3-core:
+    container_name: influxdb3-core
+    image: influxdb:3-core
+    networks:
+      - internal
+    ports:
+      - 8181:8181
+    command:
+      - influxdb3
+      - serve
+      - --without-auth
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  grafana-data:
+
