@@ -19,7 +19,7 @@ cat > ./fleet-1-target.json << 'EOF'
                 "properties": {
                     "ankaios.runtime": "podman",
                     "ankaios.restartPolicy": "ALWAYS",
-                    "ankaios.runtimeConfig": "image: localhost:5000/fleet-app:latest\ncommandOptions: [\"-e\", \"VIN=VIN25555\"]"                   
+                    "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"-e\", \"VIN=VIN25555\"]"                   
                 }
             }
         ],

@@ -12,17 +12,19 @@ services:
     volumes:
       - ./providers:/extensions
     restart: unless-stopped
-  symphony-portal:
-    image: ghcr.io/eclipse-symphony/symphony-portal:0.48-proxy.40
-    container_name: symphony-portal
-    network_mode: host
-    environment:
-      - SYMPHONY_API=http://symphony-api:8082/v1alpha2/
-      - NEXTAUTH_SECRET=SymphonyKey
-      - NEXTAUTH_URL=http://localhost:3000
-    restart: unless-stopped
-    depends_on:
-      - symphony-api
+
+#  symphony-portal:
+#    image: ghcr.io/eclipse-symphony/symphony-portal:0.48-proxy.40
+#    container_name: symphony-portal
+#    network_mode: host
+#    environment:
+#      - SYMPHONY_API=http://symphony-api:8082/v1alpha2/
+#      - NEXTAUTH_SECRET=SymphonyKey
+#      - NEXTAUTH_URL=http://localhost:3000
+#    restart: unless-stopped
+#    depends_on:
+#      - symphony-api
+
   mosquitto:
     image: eclipse-mosquitto:2
     container_name: mosquitto
@@ -32,11 +34,11 @@ services:
       - mosquitto-data:/mosquitto/data
       - mosquitto-logs:/mosquitto/log
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "mosquitto_sub -h localhost -p 1883 -t '$$SYS/#' -C 1 -W 3 >/dev/null 2>&1 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    #healthcheck:
+    #  test: ["CMD-SHELL", "mosquitto_sub -h localhost -p 1883 -t '$$SYS/#' -C 1 -W 3 >/dev/null 2>&1 || exit 1"]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 5
 volumes:
   mosquitto-data:
   mosquitto-logs:
