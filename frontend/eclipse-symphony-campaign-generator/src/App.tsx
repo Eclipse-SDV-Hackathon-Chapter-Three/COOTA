@@ -1,10 +1,17 @@
 import './App.css'
+import CampaignForm from './CampaignForm'
+import CanaryBackground from './CanaryBackground'
 
 function App() {
 
   return (
     <>
-      <h1>Eclipse Symphony Campaign Generator</h1>
+      <CanaryBackground />
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+        <img src='coota_logo.png' alt="COOTA Logo" style={{ height: 270 }} />
+      </div>
+      <h1>Campaign Launcher</h1>
+      <CampaignForm />
     </>
   )
 }
