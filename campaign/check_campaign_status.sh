@@ -16,13 +16,19 @@ echo "=================================="
 
 # 1. Check activation details
 echo "📋 ACTIVATION DETAILS:"
-curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}activations/registry/fleet-app-campaign-activation" | jq '.' 2>/dev/null || echo "Failed to get activation details"
+curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation" | jq '.' 2>/dev/null || echo "Failed to get activation details"
 
+echo ""
+curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation-1" | jq '.' 2>/dev/null || echo "Failed to get activation details"
 echo ""
 
 # 2. Check campaign status
 echo "🚀 CAMPAIGN STATUS:"
-curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}campaigns/fleet-app-campaign-v-1" | jq '.status // "No status available"' 2>/dev/null || echo "Failed to get campaign status"
+curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}campaigns/payload-campaign-v-1" | jq '.status // "No status available"' 2>/dev/null || echo "Failed to get campaign status"
+
+echo ""
+
+curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}campaigns/payload-campaign-1-v-1" | jq '.status // "No status available"' 2>/dev/null || echo "Failed to get campaign status"
 
 echo ""
 
@@ -40,11 +46,11 @@ echo ""
 # 4. Check vehicle workloads
 echo "🚗 VEHICLE WORKLOAD STATUS:"
 echo "Fleet 1 (vehicle-25555):"
-if docker exec vehicle-25555 ank get workloads 2>/dev/null | grep -q "fleet-app"; then
-    docker exec vehicle-25555 ank get workloads 2>/dev/null | grep -A 5 -B 5 "fleet-app"
+if docker exec vehicle-25555 ank get workloads 2>/dev/null | grep -q "payload"; then
+    docker exec vehicle-25555 ank get workloads 2>/dev/null | grep -A 5 -B 5 "payload"
     echo ""
     echo "Fleet 1 Logs:"
-    docker exec vehicle-25555 ank logs fleet-app 2>/dev/null | tail -10 || echo "  No logs available"
+    docker exec vehicle-25555 ank logs payload 2>/dev/null | tail -10 || echo "  No logs available"
 else
     echo "  No fleet-app workload found in Fleet 1"
 fi
@@ -53,9 +59,9 @@ echo ""
 echo "Fleet 2 (vehicles 25552, 25553, 25554):"
 for port in 25552 25553 25554; do
     echo "  Vehicle $port:"
-    if docker exec vehicle-$port ank get workloads 2>/dev/null | grep -q "fleet-app"; then
+    if docker exec vehicle-$port ank get workloads 2>/dev/null | grep -q "payload"; then
         echo "    ✅ fleet-app workload found"
-        docker exec vehicle-$port ank logs fleet-app 2>/dev/null | tail -5 || echo "    No logs available"
+        docker exec vehicle-$port ank logs payload 2>/dev/null | tail -5 || echo "    No logs available"
     else
         echo "    ❌ No fleet-app workload found"
     fi
@@ -63,17 +69,10 @@ done
 
 echo ""
 
-# 5. Check Symphony logs (if accessible)
-echo "🔧 SYMPHONY SYSTEM STATUS:"
-echo "API Health Check:"
-curl -s -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}/" | jq '.version // "API accessible"' 2>/dev/null || echo "API not accessible"
 
 echo ""
 echo "=================================="
 echo "✅ Status check complete!"
 echo ""
 echo "💡 TROUBLESHOOTING TIPS:"
-echo "- Status 9996 suggests an error in campaign execution"
-echo "- Check if targets are properly registered and connected"
-echo "- Verify MQTT broker is running (docker ps | grep mosquitto)"
 echo "- Check Symphony container logs: docker logs symphony-api"

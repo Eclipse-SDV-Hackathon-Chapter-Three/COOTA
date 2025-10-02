@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import campaign from "./campaign/campaign.json";
-import campaign2 from "./campaign/campaign_example.json";
+import campaignUpgrade from "./campaign/campaign_upgrade.json";
 
 
 type FormValues = {
@@ -74,24 +74,47 @@ const CampaignForm: React.FC = () => {
     //   },
     // };
 
-    const body = data.targetVersion === "v2" ? campaign : campaign2;
+    // const body = data.targetVersion === "v2" ? campaign : campaign2;
 
-    console.log("body", body);
-    console.log("body stringified", JSON.stringify(body));
+    // console.log("body", body);
+    // console.log("body stringified", JSON.stringify(campaign));
 
     try {
       setIsCreating(true);
       const res = await fetch(
-        `http://localhost:8085/v1alpha2/campaigns/${campaignName}`,
+        `http://localhost:8082/v1alpha2/campaigns/payload-campaign-v-1`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer TOKEN`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw`,
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify(campaign),
         }
       );
+
+      setTimeout(async () => {
+        const res = await fetch(
+          `http://localhost:8082/v1alpha2/activations/registry/payload-campaign-activation`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw`,
+            },
+            body: JSON.stringify({
+              "metadata": {
+                  "name": "payload-campaign-activation"
+              },
+              "spec": {
+                  "campaign": "payload-campaign-v-1",
+                  "stage": "",
+                  "inputs": {}
+              }
+          }),
+          }
+        );
+      }, 1000);
 
       if (!res.ok) throw new Error(await res.text());
       const json = await res.json();
@@ -109,6 +132,40 @@ const CampaignForm: React.FC = () => {
     console.log("activating campaign");
     try {
       setIsActivating(true);
+      const res = await fetch(
+        `http://localhost:8082/v1alpha2/campaigns/payload-campaign-1-v-1`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw`,
+          },
+          body: JSON.stringify(campaignUpgrade),
+        }
+      );
+
+      setTimeout(async () => {
+        const res = await fetch(
+          `http://localhost:8082/v1alpha2/activations/registry/payload-campaign-activation-1`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw`,
+            },
+            body: JSON.stringify({
+              "metadata": {
+                  "name": "payload-campaign-activation-1"
+              },
+              "spec": {
+                  "campaign": "payload-campaign-1-v-1",
+                  "stage": "",
+                  "inputs": {}
+              }
+          }),
+          }
+        );
+      }, 1000);
     } catch (err) {
       console.error("❌ Error activating campaign:", err);
       alert("Error activating campaign");
@@ -170,13 +227,9 @@ const CampaignForm: React.FC = () => {
         </select>
       </div>
 
-      <div>
-        
-      </div>
-
-      <div className="margin-top-bottom-l">
-        Current Status: {currentStatus}
-      </div>
+      {/* <div className="margin-top-bottom-l">
+        Current Status: 
+      </div> */}
 
       <div>
         <button
@@ -184,7 +237,7 @@ const CampaignForm: React.FC = () => {
           className="bg-green-600 text-white px-4 py-2 rounded margin-left-right-s"
           disabled={isCreating || isActivating}
         >
-          🏗️ Create Campaign
+          🏗️ Canary Rollout
         </button>
         <button
           type="button"
@@ -192,7 +245,7 @@ const CampaignForm: React.FC = () => {
           onClick={activateCampaign}
           disabled={isCreating || isActivating}
         >
-          🚀 Activate Campaign
+          🚀 Canary Upgrade
         </button>
       </div>
     </form>

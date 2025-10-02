@@ -6,6 +6,8 @@ export SYMPHONY_API_URL=http://localhost:8082/v1alpha2/
 echo "Authenticating with Symphony..."
 TOKEN=$(curl -s -X POST -H "Content-Type: application/json" -d '{"username":"admin","password":""}' "${SYMPHONY_API_URL}users/auth" | jq -r '.accessToken')
 
+echo $TOKEN
+
 if [ "$TOKEN" = "null" ] || [ -z "$TOKEN" ]; then
     echo "Authentication failed!"
     exit 1

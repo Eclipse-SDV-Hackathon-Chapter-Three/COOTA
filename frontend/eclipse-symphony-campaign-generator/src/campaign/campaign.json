@@ -1,34 +1,56 @@
 {
     "metadata": {
-        "name": "fleet-app-campaign-v-1"
+        "name": "payload-campaign-v-1"
     },
     "spec": {
-        "rootResource": "fleet-app-campaign",
+        "rootResource": "payload-campaign",
         "firstStage": "test-stage-entry",
         "selfDriving": true,
         "stages": {
             "test-stage-entry": {
                 "name": "test-stage-entry",
-                "provider": "providers.stage.create",
-                "config": {
-                    "user": "admin",
-                    "password": "",
-                    "wait.count": 5,
-                    "wait.interval": 5
-                },
+                "provider": "providers.stage.http",
                 "inputs": {
-                    "action": "create",
-                    "objectName": "fleet-app-test-instance",
-                    "objectType": "instance",
-                    "object": {
+                    "url": "http://localhost:8082/v1alpha2/targets/registry/fleet-1-target",
+                    "method": "POST",
+                    "header.Content-Type": "application/json",
+                    "header.Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw",
+                    "body": {
                         "metadata": {
-                            "name": "fleet-app-test-instance"
+                            "name": "fleet-1-target"
                         },
                         "spec": {
-                            "solution": "fleet-app-v-1",
-                            "target": {
-                                "name": "fleet-1-target"
-                            }
+                            "forceRedeploy": true,
+                            "components": [
+                                {
+                                    "name": "payload1",   
+                                    "type": "ankaios",             
+                                    "properties": {
+                                        "ankaios.runtime": "podman",
+                                        "ankaios.restartPolicy": "ALWAYS",
+                                        "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"--network=host\", \"-e\", \"VIN=VIN25555\"]"                   
+                                    }
+                                }
+                            ],
+                            "displayName": "Fleet 1 Target",
+                            "topologies": [
+                                {
+                                    "bindings": [
+                                        {
+                                            "role": "ankaios",
+                                            "provider": "providers.target.mqtt",
+                                            "config": {
+                                                "name": "proxy",
+                                                "brokerAddress": "tcp://127.0.0.1:1883",
+                                                "clientID": "symphony",
+                                                "requestTopic": "coa-request",
+                                                "responseTopic": "coa-response",
+                                                "timeoutSeconds": "30"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     }
                 },
@@ -46,33 +68,57 @@
                 "name": "validation-stage",
                 "provider": "providers.stage.http",
                 "inputs": {
-                    "url": "https://jsonplaceholder.typicode.com/posts/1",
+                    "url": "http://localhost:4321/fleet/healthy?currVersion=v2&threshold=3000",
                     "method": "GET"
                 },
-                "stageSelector": "production-stage"
+
+                "successCodes": [200],
+                "stageSelector": "${{$if($equal($output(validation-stage,status), 200),'production-stage','')}}"
             },
             "production-stage": {
                 "name": "production-stage",
-                "provider": "providers.stage.create",
-                "config": {
-                    "user": "admin",
-                    "password": "",
-                    "wait.count": 2,
-                    "wait.interval": 2
-                },
+                "provider": "providers.stage.http",
                 "inputs": {
-                    "action": "create",
-                    "objectName": "fleet-app-prod-instance",
-                    "objectType": "instance",
-                    "object": {
+                    "url": "http://localhost:8082/v1alpha2/targets/registry/fleet-2-target",
+                    "method": "POST",
+                    "header.Content-Type": "application/json",
+                    "header.Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw",
+                    "body": {
                         "metadata": {
-                            "name": "fleet-app-prod-instance"
+                            "name": "fleet-2-target"
                         },
                         "spec": {
-                            "solution": "fleet-app-v-1",
-                            "target": {
-                                "name": "fleet-2-target"
-                            }
+                            "forceRedeploy": true,
+                            "components": [
+                                {
+                                    "name": "payload1",   
+                                    "type": "ankaios",             
+                                    "properties": {
+                                        "ankaios.runtime": "podman",
+                                        "ankaios.restartPolicy": "ALWAYS",
+                                        "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"--network=host\", \"-e\", \"VIN=VIN25555\"]"                   
+                                    }
+                                }
+                            ],
+                            "displayName": "Fleet 2 Target",
+                            "topologies": [
+                                {
+                                    "bindings": [
+                                        {
+                                            "role": "ankaios",
+                                            "provider": "providers.target.mqtt",
+                                            "config": {
+                                                "name": "proxy",
+                                                "brokerAddress": "tcp://127.0.0.1:1883",
+                                                "clientID": "symphony",
+                                                "requestTopic": "coa-request",
+                                                "responseTopic": "coa-response",
+                                                "timeoutSeconds": "30"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     }
                 },
@@ -81,4 +127,3 @@
         }
     }
 }
-

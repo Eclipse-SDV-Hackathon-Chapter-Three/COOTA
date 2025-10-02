@@ -3,7 +3,18 @@
         "name": "fleet-2-target"
     },
     "spec": {
-        "displayName": "Fleet 2 Target",
+        "forceRedeploy": true,
+        "components": [
+            {
+                "name": "payload1",   
+                "type": "ankaios",             
+                "properties": {
+                    "ankaios.runtime": "podman",
+                    "ankaios.restartPolicy": "ALWAYS",
+                    "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"                   
+                }
+            }
+        ],
         "topologies": [
             {
                 "bindings": [

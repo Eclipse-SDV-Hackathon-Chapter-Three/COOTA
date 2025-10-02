@@ -1,20 +1,16 @@
 services:
   grafana:
     image: "grafana/grafana"
-    ports:
-      - "3000:3000"
-    networks:
-      - internal
+    network_mode: host
     volumes: 
       - ./grafana_data:/var/lib/grafana
+    depends_on:
+      - influxdb3-core
 
   influxdb3-core:
     container_name: influxdb3-core
     image: influxdb:3-core
-    networks:
-      - internal
-    ports:
-      - 8181:8181
+    network_mode: host
     volumes:
       - ./influxdb/entrypoint.sh:/entrypoint.sh
     command: 
@@ -25,27 +21,59 @@ services:
     build: 
       context: ./campaign_manager
     environment:
-      - INFLUXDB_HOST=http://influxdb3-core:8181
-      - INFLUXDB_DATABASE=grafana
-    networks:
-      - internal
-    ports:
-      - 5000:5000
+      - INFLUXDB_HOST=http://localhost:8181
+      - INFLUXDB_DATABASE=signals
+    network_mode: host
+    depends_on:
+      - influxdb3-core
 
   mqtt-forwarder:
     container_name: mqtt-forwarder
     build: 
       context: ./mqtt_forwarder
     environment:
-      - INFLUXDB_HOST=http://influxdb3-core:8181
-      - INFLUXDB_DATABASE=grafana
+      - INFLUXDB_HOST=http://localhost:8181
+      - INFLUXDB_DATABASE=signals
       - MQTT_TOPIC=logger/#
       - MQTT_BROKER=localhost
       - MQTT_PORT=1883
-    networks:
-      - internal
+    network_mode: host
+    depends_on:
+      #- mosquitto
+      - influxdb3-core
 
-networks:
-  internal:
-    driver: bridge
+#  symphony-api:
+#    image: ghcr.io/eclipse-symphony/symphony-api:0.48-proxy.41
+#    container_name: symphony-api
+#    network_mode: host
+#    environment:
+#      - USE_SERVICE_ACCOUNT_TOKENS=false
+#      - SYMPHONY_API_URL=http://localhost:8082/v1alpha2/
+#      - CONFIG=/symphony-api-no-k8s.json
+#      - LOG_LEVEL=Error
+#    volumes:
+#      - ./symphony:/extensions
+#    restart: unless-stopped
+#    depends_on:
+#      - mosquitto
+    
+#  mosquitto:
+#    image: eclipse-mosquitto:2
+#    container_name: mosquitto
+#    network_mode: host
+#    volumes:
+#      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+#      - mosquitto-data:/mosquitto/data
+#      - mosquitto-logs:/mosquitto/log
+#    restart: unless-stopped
+#    healthcheck:
+#      test: ["CMD-SHELL", "mosquitto_sub -h localhost -p 1883 -t '$$SYS/#' -C 1 -W 3 >/dev/null 2>&1 || exit 1"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#
+#volumes:
+#  mosquitto-data:
+#  mosquitto-logs:
+
 

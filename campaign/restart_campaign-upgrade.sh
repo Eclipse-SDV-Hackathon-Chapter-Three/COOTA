@@ -15,7 +15,7 @@ echo "Authentication successful. Token: ${TOKEN:0:20}..."
 
 # Delete existing activation
 echo "🗑️  Deleting existing activation..."
-HTTP_CODE=$(curl -s -w "%{http_code}" -X DELETE -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation" -o delete_response.json)
+HTTP_CODE=$(curl -s -w "%{http_code}" -X DELETE -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation-1" -o delete_response.json)
 
 if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 204 ]; then
     echo "✅ Existing activation deleted successfully"
@@ -38,17 +38,17 @@ echo "🚀 Creating new activation..."
 cat > ./activation.json << 'EOF'
 {
     "metadata": {
-        "name": "payload-campaign-activation"
+        "name": "payload-campaign-activation-1"
     },
     "spec": {
-        "campaign": "payload-campaign-v-1",
+        "campaign": "payload-campaign-1-v-1",
         "stage": "",
         "inputs": {}
     }
 }
 EOF
 
-HTTP_CODE=$(curl -s -w "%{http_code}" -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @./activation.json "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation" -o response.json)
+HTTP_CODE=$(curl -s -w "%{http_code}" -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @./activation.json "${SYMPHONY_API_URL}activations/registry/payload-campaign-activation-1" -o response.json)
 
 echo "HTTP Status Code: $HTTP_CODE"
 RESPONSE=$(cat response.json)

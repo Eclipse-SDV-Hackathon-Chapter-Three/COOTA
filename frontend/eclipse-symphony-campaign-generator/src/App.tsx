@@ -1,10 +1,12 @@
 import './App.css'
 import CampaignForm from './CampaignForm'
+import CanaryBackground from './CanaryBackground'
 
 function App() {
 
   return (
     <>
+      <CanaryBackground />
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
         <img src='coota_logo.png' alt="COOTA Logo" style={{ height: 270 }} />
       </div>

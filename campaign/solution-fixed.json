@@ -1,20 +1,20 @@
 {
     "metadata": {
-        "name": "payload1-v-1",
+        "name": "fleet-app-v-1",
         "namespace": "default"
     },
     "spec": {
         "displayName": "Fleet Management Solution",
-        "rootResource": "payload1",
+        "rootResource": "fleet-app",
         "version": "1",
         "components": [
             {
-                "name": "payload1",
+                "name": "fleet-app",
                 "type": "ankaios",
                 "properties": {
                     "ankaios.runtime": "podman",
                     "ankaios.restartPolicy": "ALWAYS",
-                    "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"
+                    "ankaios.runtimeConfig": "image: alpine:latest\ncommandOptions: [\"-e\", \"VIN=VIN25555\"]\ncommand: [\"sh\", \"-c\", \"while true; do echo '[2025-10-01 22:12:00] Vehicle $VIN is running'; sleep 5; done\"]"
                 }
             }
         ]

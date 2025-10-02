@@ -1,20 +1,20 @@
 {
     "metadata": {
-        "name": "payload1-v-1",
+        "name": "payload-v-2",
         "namespace": "default"
     },
     "spec": {
-        "displayName": "Fleet Management Solution",
-        "rootResource": "payload1",
+        "displayName": "Fleet Management Payload",
+        "rootResource": "payload2",
         "version": "1",
         "components": [
             {
-                "name": "payload1",
+                "name": "payload2",
                 "type": "ankaios",
                 "properties": {
                     "ankaios.runtime": "podman",
                     "ankaios.restartPolicy": "ALWAYS",
-                    "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"
+                    "ankaios.runtimeConfig": "image: localhost:5000/payload-2:latest\ncommandOptions: [\"-v\", \"/tmp/vehicle-vin:/tmp/vehicle-vin:ro\"]"
                 }
             }
         ]

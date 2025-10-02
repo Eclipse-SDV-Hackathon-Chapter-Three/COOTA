@@ -45,10 +45,10 @@ def check_if_healthy():
     else:
         time_window = float(time_window)
 
-    if not is_metric_relatively_ok("battery_consumption_per_hour", 'battery_usage', currVersion, threshold, time_window):
+    if not is_metric_relatively_ok("battery_consumption_per_hour", 'ev', currVersion, threshold, time_window):
         return Response("NOT_ACCEPTABLE", status=406)
 
     return Response("OK", status=200)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=4321)

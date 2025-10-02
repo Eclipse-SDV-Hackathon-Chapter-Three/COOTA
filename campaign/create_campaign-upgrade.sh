@@ -15,7 +15,7 @@ echo "Authentication successful. Token: ${TOKEN:0:20}..."
 
 # Delete existing campaign if it exists
 echo "Checking for existing campaign..."
-HTTP_CODE=$(curl -s -w "%{http_code}" -X DELETE -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}campaigns/payload-campaign-v-1" -o delete_response.json)
+HTTP_CODE=$(curl -s -w "%{http_code}" -X DELETE -H "Authorization: Bearer $TOKEN" "${SYMPHONY_API_URL}campaigns/payload-campaign-1-v1" -o delete_response.json)
 
 if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 204 ]; then
     echo "✅ Existing campaign deleted successfully"
@@ -31,7 +31,7 @@ rm -f delete_response.json
 echo "Creating staged deployment campaign..."
 
 # Check if campaign.json exists
-if [ ! -f "./campaign.json" ]; then
+if [ ! -f "./campaign-upgrade.json" ]; then
     echo "❌ Error: campaign.json file not found!"
     echo "Please create campaign.json file in the same directory."
     exit 1
@@ -41,7 +41,7 @@ echo "Loading campaign from campaign.json..."
 
 # Post campaign to Symphony
 echo "Posting campaign to Symphony API..."
-HTTP_CODE=$(curl -s -w "%{http_code}" -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @./campaign.json "${SYMPHONY_API_URL}campaigns/payload-campaign-v-1" -o response.json)
+HTTP_CODE=$(curl -s -w "%{http_code}" -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data @./campaign-upgrade.json "${SYMPHONY_API_URL}campaigns/payload-campaign-1-v-1" -o response.json)
 
 echo "HTTP Status Code: $HTTP_CODE"
 RESPONSE=$(cat response.json)
