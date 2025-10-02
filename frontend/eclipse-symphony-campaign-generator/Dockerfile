@@ -12,6 +12,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 3001
 
-CMD [ "serve", "-s", "dist" ]
+CMD [ "serve", "-s", "dist", "-l", "3001" ]

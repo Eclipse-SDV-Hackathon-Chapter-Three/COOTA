@@ -40,3 +40,18 @@
 .read-the-docs {
   color: #888;
 }
+
+.margin-left-right-s {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.margin-left-right-m {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.margin-top-bottom-l {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}

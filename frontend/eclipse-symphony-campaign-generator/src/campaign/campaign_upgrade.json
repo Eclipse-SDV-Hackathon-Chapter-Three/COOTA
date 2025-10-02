@@ -1,0 +1,178 @@
+{
+  "metadata": {
+      "name": "payload-campaign-1-v-1"
+  },
+  "spec": {
+      "rootResource": "payload-campaign-1",
+      "firstStage": "test-stage-entry",
+      "selfDriving": true,
+      "stages": {
+          "test-stage-entry": {
+              "name": "test-stage-entry",
+              "provider": "providers.stage.http",
+              "inputs": {
+                  "url": "http://localhost:8082/v1alpha2/targets/registry/fleet-1-target",
+                  "method": "POST",
+                  "header.Content-Type": "application/json",
+                  "header.Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw",
+                  "body": {
+                      "metadata": {
+                          "name": "fleet-1-target"
+                      },
+                      "spec": {
+                          "forceRedeploy": true,
+                          "components": [
+                              {
+                                  "name": "payload2",   
+                                  "type": "ankaios",             
+                                  "properties": {
+                                      "ankaios.runtime": "podman",
+                                      "ankaios.restartPolicy": "ALWAYS",
+                                      "ankaios.runtimeConfig": "image: localhost:5000/payload-2:latest\ncommandOptions: [\"--network=host\", \"-e\", \"VIN=VIN25555\"]"                   
+                                  }
+                              }
+                          ],
+                          "displayName": "Fleet 1 Target",
+                          "topologies": [
+                              {
+                                  "bindings": [
+                                      {
+                                          "role": "ankaios",
+                                          "provider": "providers.target.mqtt",
+                                          "config": {
+                                              "name": "proxy",
+                                              "brokerAddress": "tcp://127.0.0.1:1883",
+                                              "clientID": "symphony",
+                                              "requestTopic": "coa-request",
+                                              "responseTopic": "coa-response",
+                                              "timeoutSeconds": "30"
+                                          }
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  }
+              },
+              "stageSelector": "wait-stage"
+          },
+          "wait-stage": {
+              "name": "wait-stage",
+              "provider": "providers.stage.delay",
+              "inputs": {
+                  "delay": "10s"
+              },
+              "stageSelector": "validation-stage"
+          },
+          "validation-stage": {
+              "name": "validation-stage",
+              "provider": "providers.stage.http",
+              "inputs": {
+                  "url": "http://localhost:4321/fleet/healthy?currVersion=v2&threshold=30",
+                  "method": "GET"
+              },
+
+              "successCodes": [200],
+              "stageSelector": "${{$if($equal($output('validation-stage',status),200),'production-stage','rollback')}}"
+          },
+          "production-stage": {
+              "name": "production-stage",
+              "provider": "providers.stage.http",
+              "inputs": {
+                  "url": "http://localhost:8082/v1alpha2/targets/registry/fleet-2-target",
+                  "method": "POST",
+                  "header.Content-Type": "application/json",
+                  "header.Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw",
+                  "body": {
+                      "metadata": {
+                          "name": "fleet-2-target"
+                      },
+                      "spec": {
+                          "forceRedeploy": true,
+                          "components": [
+                              {
+                                  "name": "payload2",   
+                                  "type": "ankaios",             
+                                  "properties": {
+                                      "ankaios.runtime": "podman",
+                                      "ankaios.restartPolicy": "ALWAYS",
+                                      "ankaios.runtimeConfig": "image: localhost:5000/payload-2:latest\ncommandOptions: [\"--network=host\", \"-e\", \"VIN=VIN25555\"]"                   
+                                  }
+                              }
+                          ],
+                          "displayName": "Fleet 2 Target",
+                          "topologies": [
+                              {
+                                  "bindings": [
+                                      {
+                                          "role": "ankaios",
+                                          "provider": "providers.target.mqtt",
+                                          "config": {
+                                              "name": "proxy",
+                                              "brokerAddress": "tcp://127.0.0.1:1883",
+                                              "clientID": "symphony",
+                                              "requestTopic": "coa-request",
+                                              "responseTopic": "coa-response",
+                                              "timeoutSeconds": "30"
+                                          }
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  }
+              },
+              "stageSelector": ""
+          },
+          "rollback": {
+              "name": "rollback",
+              "provider": "providers.stage.http",
+              "inputs": {
+                  "url": "http://localhost:8082/v1alpha2/targets/registry/fleet-1-target",
+                  "method": "POST",
+                  "header.Content-Type": "application/json",
+                  "header.Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJpc3MiOiJzeW1waG9ueSIsInN1YiI6InN5bXBob255IiwiYXVkIjpbIioiXSwiZXhwIjoxNzU5NDQyODA4LCJuYmYiOjE3NTkzNTY0MDgsImlhdCI6MTc1OTM1NjQwOCwianRpIjoiMSJ9.4XFVGMImLYEpn5FQzniOH1vmUXCqJkfn_p5VOfJcRRw",
+                  "body": {
+                      "metadata": {
+                          "name": "fleet-1-target"
+                      },
+                      "spec": {
+                          "forceRedeploy": true,
+                          "components": [
+                              {
+                                  "name": "payload1",   
+                                  "type": "ankaios",             
+                                  "properties": {
+                                      "ankaios.runtime": "podman",
+                                      "ankaios.restartPolicy": "ALWAYS",
+                                      "ankaios.runtimeConfig": "image: localhost:5000/payload-1:latest\ncommandOptions: [\"--network=host\", \"-e\", \"VIN=VIN25555\"]"                   
+                                  }
+                              }
+                          ],
+                          "displayName": "Fleet 1 Target",
+                          "topologies": [
+                              {
+                                  "bindings": [
+                                      {
+                                          "role": "ankaios",
+                                          "provider": "providers.target.mqtt",
+                                          "config": {
+                                              "name": "proxy",
+                                              "brokerAddress": "tcp://127.0.0.1:1883",
+                                              "clientID": "symphony",
+                                              "requestTopic": "coa-request",
+                                              "responseTopic": "coa-response",
+                                              "timeoutSeconds": "30"
+                                          }
+                                      }
+                                  ]
+                              }
+                          ]
+                      }
+                  }
+              },
+              "stageSelector": ""
+          }
+      }
+  }
+}
